@@ -1,0 +1,162 @@
+[
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-HL-FR-BA-U01",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-HL-FL-BB-U01",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50P-HL-FR-NA",
+    "vehicleId": "toyota-camry-xv50-p"
+  },
+  {
+    "partSku": "DCR-LEX-RX-AL20P-HL-FL-BA-U01",
+    "vehicleId": "lexus-rx-al20-p",
+    "notes": "Triple-beam LED cars only. Will not fit single-projector headlights."
+  },
+  {
+    "partSku": "DCR-LEX-RX-AL20F-HL-FR-NG",
+    "vehicleId": "lexus-rx-al20-f"
+  },
+  {
+    "partSku": "DCR-TOY-HLN-XU50F-BL-OR-BA-U01",
+    "vehicleId": "toyota-highlander-xu50-f"
+  },
+  {
+    "partSku": "DCR-TOY-HLN-XU50F-BL-OL-BC-U01",
+    "vehicleId": "toyota-highlander-xu50-f"
+  },
+  {
+    "partSku": "DCR-LEX-ES-XV60F-BL-IR-BA-U01",
+    "vehicleId": "lexus-es-xv60-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-BL-OL-BA-U01",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-TOY-COR-E170F-FG-FL-NA",
+    "vehicleId": "toyota-corolla-e170-f"
+  },
+  {
+    "partSku": "DCR-TOY-RAV-XA40F-FG-FR-NG",
+    "vehicleId": "toyota-rav4-xa40-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-FB-F-BA-U01",
+    "vehicleId": "toyota-camry-xv50-f",
+    "notes": "Has foglamp holes. No parking sensor holes."
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-FB-F-BB-U02",
+    "vehicleId": "toyota-camry-xv50-f",
+    "notes": "Has foglamp and parking sensor holes."
+  },
+  {
+    "partSku": "DCR-LEX-RX-AL20P-FB-F-NA",
+    "vehicleId": "lexus-rx-al20-p",
+    "notes": "Has parking sensor and headlamp washer holes. Not for F Sport."
+  },
+  {
+    "partSku": "DCR-TOY-HLN-XU50F-RB-R-BB-U01",
+    "vehicleId": "toyota-highlander-xu50-f"
+  },
+  {
+    "partSku": "DCR-TOY-SIE-XL30F-RB-R-BA-U01",
+    "vehicleId": "toyota-sienna-xl30-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-RB-R-NA",
+    "vehicleId": "toyota-camry-xv50-f",
+    "notes": "No parking sensor holes."
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-FC-FL-NA",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-FC-FR-NA",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-LEX-RX-AL20P-FC-FL-BA-U01",
+    "vehicleId": "lexus-rx-al20-p"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-HD-F-BA-U01",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-TOY-COR-E170F-HD-F-BC-U01",
+    "vehicleId": "toyota-corolla-e170-f"
+  },
+  {
+    "partSku": "DCR-TOY-RAV-XA40F-FD-FL-BA-U01",
+    "vehicleId": "toyota-rav4-xa40-f"
+  },
+  {
+    "partSku": "DCR-TOY-RAV-XA40F-FD-FR-NA",
+    "vehicleId": "toyota-rav4-xa40-f"
+  },
+  {
+    "partSku": "DCR-TOY-HLN-XU50F-DR-FL-BA-U01",
+    "vehicleId": "toyota-highlander-xu50-f"
+  },
+  {
+    "partSku": "DCR-TOY-HLN-XU50F-DR-RR-BB-U01",
+    "vehicleId": "toyota-highlander-xu50-f"
+  },
+  {
+    "partSku": "DCR-TOY-SIE-XL30F-DR-FR-BA-U01",
+    "vehicleId": "toyota-sienna-xl30-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-DR-FL-BC-U01",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-DR-FL-BC-U01",
+    "vehicleId": "toyota-camry-xv50-p"
+  },
+  {
+    "partSku": "DCR-LEX-RX-AL20F-GR-F-BA-U01",
+    "vehicleId": "lexus-rx-al20-f",
+    "notes": "With front camera mount. Not for F Sport."
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-GR-F-NG",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-LEX-GX-J150F-GR-F-NA",
+    "vehicleId": "lexus-gx-j150-f"
+  },
+  {
+    "partSku": "DCR-LEX-RX-AL20P-MR-LH-BA-U01",
+    "vehicleId": "lexus-rx-al20-p",
+    "notes": "Camera version. Your car needs the 360° camera plug."
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-MR-RH-BB-U01",
+    "vehicleId": "toyota-camry-xv50-f"
+  },
+  {
+    "partSku": "DCR-TOY-CAM-XV50F-MR-RH-BB-U01",
+    "vehicleId": "toyota-camry-xv50-p",
+    "notes": "Only for cars that already have indicator mirrors."
+  },
+  {
+    "partSku": "DCR-LEX-ES-XV60F-MR-LH-NA",
+    "vehicleId": "lexus-es-xv60-f"
+  },
+  {
+    "partSku": "DCR-TOY-RAV-XA40F-MR-RH-BA-U01",
+    "vehicleId": "toyota-rav4-xa40-f"
+  },
+  {
+    "partSku": "DCR-LEX-GX-J150F-MR-LH-BA-U01",
+    "vehicleId": "lexus-gx-j150-f"
+  }
+]

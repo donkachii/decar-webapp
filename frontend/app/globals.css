@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Inspection-bay palette (CLAUDE.md section 8). Tailwind's default colours are
+  wiped so nothing outside this list can be used by accident.
+  Contrast notes: amber is never text on light grounds and always carries
+  graphite text. Primer is for rules, icons and text on graphite only.
+*/
+@theme {
+  --color-*: initial;
+  --color-primer: #8b9196;
+  --color-bay: #eceef0;
+  --color-paper: #ffffff;
+  --color-graphite: #23272b;
+  --color-amber: #e39a0b;
+  --color-fit: #1e7a4c;
+  --color-warn: #b4441c;
+
+  --font-display: var(--font-naira), var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+
+  --animate-settle: settle 180ms ease-out;
+  @keyframes settle {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* shadcn/ui semantic names mapped onto the palette. */
+@theme inline {
+  --font-sans: var(--font-naira), var(--font-barlow), system-ui, sans-serif;
+  --font-heading: var(--font-display);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+}
+
+:root {
+  --background: var(--color-bay);
+  --foreground: var(--color-graphite);
+  --card: var(--color-paper);
+  --card-foreground: var(--color-graphite);
+  --popover: var(--color-paper);
+  --popover-foreground: var(--color-graphite);
+  --primary: var(--color-amber);
+  --primary-foreground: var(--color-graphite);
+  --secondary: var(--color-bay);
+  --secondary-foreground: var(--color-graphite);
+  --muted: var(--color-bay);
+  --muted-foreground: var(--color-graphite);
+  --accent: var(--color-bay);
+  --accent-foreground: var(--color-graphite);
+  --destructive: var(--color-warn);
+  --border: var(--color-primer);
+  --input: var(--color-primer);
+  --ring: var(--color-graphite);
+  --radius: 0.375rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-semibold text-balance;
+    letter-spacing: -0.005em;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* One focus style everywhere: a graphite outline, paper on dark grounds. */
+  :focus-visible {
+    outline: 2px solid var(--color-graphite);
+    outline-offset: 2px;
+  }
+  .on-dark :focus-visible {
+    outline-color: var(--color-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}

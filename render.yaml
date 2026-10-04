@@ -1,0 +1,35 @@
+# Render Blueprint for the API (backend/). The storefront (frontend/) is on Vercel.
+# Apply once: Render dashboard > New > Blueprint > this repo. Values marked
+# `sync: false` are entered in the dashboard and never live in git.
+# Optional features are switched on later under Environment, same names as
+# backend/.env.example: GMAIL_USER, GMAIL_APP_PASSWORD, OWNER_EMAIL,
+# WHATSAPP_NUMBER, PAYSTACK_SECRET_KEY, CLOUDINARY_URL.
+services:
+  - type: web
+    name: decar-revolutionist-api
+    runtime: python
+    plan: free
+    region: ohio # next to the database (us-east-2)
+    rootDir: backend
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: uv run --frozen --no-dev alembic upgrade head && uv run --frozen --no-dev uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://decar-revolutionist.vercel.app
+      - key: SESSION_SECRET
+        generateValue: true
+      # Render keeps only the checkout between build and run, so if uv has to
+      # download Python 3.13 it must land inside it.
+      - key: UV_PYTHON_INSTALL_DIR
+        value: /opt/render/project/src/.uv-python
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false

@@ -1,0 +1,50 @@
+[project]
+name = "decar-api"
+version = "0.1.0"
+description = "De Car Revolutionist API: catalog, fitment, orders, stock and Google sign-in."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.14",
+  "fastapi>=0.115",
+  "httpx>=0.28",
+  "psycopg[binary]>=3.2",
+  "pydantic>=2.10",
+  "pydantic-settings>=2.7",
+  "pyjwt[crypto]>=2.10",
+  "sqlalchemy[asyncio]>=2.0.36",
+  "uvicorn[standard]>=0.32",
+]
+
+[dependency-groups]
+dev = [
+  "mypy>=1.14",
+  "pytest>=8.3",
+  "ruff>=0.9",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF", "ASYNC"]
+# Year ranges use an en dash on purpose: "2015–2017".
+allowed-confusables = ["–"]
+
+[tool.ruff.lint.per-file-ignores]
+# Inline-styled HTML email templates read better unwrapped.
+"app/services/email.py" = ["E501"]
+
+[tool.mypy]
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["alembic/versions/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-p anyio"

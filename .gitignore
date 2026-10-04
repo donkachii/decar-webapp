@@ -1,0 +1,9 @@
+# Each app has its own .gitignore (frontend/, backend/). This covers the root.
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Photo sources for `python -m app.photos`; Cloudinary keeps the uploaded copies.
+/photos/
+/decar/
