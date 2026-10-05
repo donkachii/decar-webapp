@@ -13,6 +13,7 @@ import { PositionDiagram } from "@/components/position-diagram";
 import { StockChecked } from "@/components/stock-checked";
 import { ChooseCarButton } from "@/components/vehicle-picker";
 import { getPart, getPartFitment, getParts, getReplacedTogether } from "@/lib/catalog";
+import { isDrawing } from "@/lib/catalog/images";
 import {
   CATEGORY_INFO,
   CONDITION_INFO,
@@ -98,7 +99,7 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
       <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
         <div className="lg:sticky lg:top-6 lg:self-start">
           <PartGallery images={part.images} alt={title} position={part.position} />
-          {part.images[0]?.startsWith("/parts/") ? (
+          {isDrawing(part.images[0]) ? (
             <p className="mt-2 text-sm">Drawing shown. Ask on WhatsApp for photos of this unit.</p>
           ) : null}
         </div>
@@ -119,7 +120,7 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
             {selected ? (
               <FitStatus fits={fits} vehicleShortLabel={vehicleShortLabel(selected)} className="text-base" />
             ) : (
-              <div className="flex flex-wrap items-center gap-3 rounded-md border border-dashed border-graphite px-3 py-2.5">
+              <div className="flex flex-wrap items-center gap-3 rounded-md border border-dashed border-navy px-3 py-2.5">
                 <p className="text-[15px]">Choose your car to check this part fits it.</p>
                 <ChooseCarButton variant="outline" className="h-9 px-3 text-sm" />
               </div>
@@ -141,7 +142,7 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
               href={whatsappLink(partEnquiryMessage({ sku: part.sku, title, url }))}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-graphite bg-paper px-4 font-semibold hover:bg-bay"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-navy bg-paper px-4 font-semibold hover:bg-bay"
             >
               <MessageCircle aria-hidden className="size-[18px]" />
               Ask about this part on WhatsApp
@@ -251,6 +252,20 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
             <PartGrid parts={alternatives} />
           </div>
         </section>
+      ) : null}
+
+      {/* Phones: price and Add to cart stay in reach below the photos. Sticky, not
+          fixed, so it leaves with the page content and never covers the footer. */}
+      {available ? (
+        <div className="sticky bottom-0 z-30 -mx-4 mt-10 border-t border-primer bg-paper px-4 py-3 lg:hidden">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0">
+              <p className="font-display text-2xl leading-none font-bold tabular">{formatNGN(part.priceNGN)}</p>
+              <p className="mt-1 truncate text-[13px]">{stockLine(part)}</p>
+            </div>
+            <AddToCartButton sku={part.sku} maxQty={part.stockQty} className="ml-auto w-auto min-w-[9.5rem]" />
+          </div>
+        </div>
       ) : null}
     </div>
   );

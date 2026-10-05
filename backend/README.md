@@ -6,5 +6,4 @@ FastAPI backend for the storefront in `../frontend`: catalog, fitment, stock, or
 cp .env.example .env && createdb decar && uv sync
 uv run alembic upgrade head && uv run python -m app.seed
 uv run uvicorn app.main:app --reload   # http://localhost:8000/docs
-uv run pytest                          # API tests need: createdb decar_test
 ```

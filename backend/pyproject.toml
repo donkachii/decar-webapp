@@ -19,7 +19,6 @@ dependencies = [
 [dependency-groups]
 dev = [
   "mypy>=1.14",
-  "pytest>=8.3",
   "ruff>=0.9",
 ]
 
@@ -44,7 +43,3 @@ allowed-confusables = ["–"]
 strict = true
 plugins = ["pydantic.mypy"]
 exclude = ["alembic/versions/"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-p anyio"

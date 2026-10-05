@@ -52,7 +52,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         ) : null}
       </div>
       {access.demo ? (
-        <p className="mt-3 rounded-md border border-dashed border-graphite px-3 py-2 text-sm">
+        <p className="mt-3 rounded-md border border-dashed border-navy px-3 py-2 text-sm">
           Demo mode: Google sign-in isn&apos;t set up on the API, so anyone running it locally can manage stock.
         </p>
       ) : null}
@@ -65,7 +65,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
             aria-current={view === v ? "page" : undefined}
             className={cn(
               "flex h-11 items-center justify-center rounded-[4px] font-display text-xl font-semibold",
-              view === v ? "bg-graphite text-paper" : "hover:bg-bay",
+              view === v ? "bg-navy text-paper" : "hover:bg-bay",
             )}
           >
             {v === "stock" ? "Stock" : "Orders"}
@@ -110,7 +110,7 @@ async function StockView({ q, status }: { q: string; status: string }) {
             aria-current={status === s ? "true" : undefined}
             className={cn(
               "inline-flex h-9 shrink-0 items-center rounded-full border px-3.5 text-sm font-medium",
-              status === s ? "border-amber bg-amber font-semibold" : "border-primer bg-paper",
+              status === s ? "border-tan bg-tan font-semibold" : "border-primer bg-paper",
             )}
           >
             {s ? STATUS_LABEL[s as PartStatus] : "All"}

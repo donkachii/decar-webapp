@@ -15,7 +15,7 @@ import {
   vehicleLabel,
   vehicleShortLabel,
 } from "@/lib/catalog/labels";
-import { CATEGORY_TYPES, CONDITIONS, isCategory, type Position } from "@/lib/catalog/types";
+import { CATEGORY_TYPES, CONDITIONS, isCategory, type Part, type Position } from "@/lib/catalog/types";
 import { TYPE_POSITIONS } from "@/lib/catalog/zones";
 import { keepHref, parseList, setHref, toggleHref } from "@/lib/filters";
 import { resolveListingVehicle } from "@/lib/vehicle";
@@ -48,6 +48,44 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/sho
   const parts = await getParts({ category, types, conditions, positions, vehicleId: filter?.id });
   const info = CATEGORY_INFO[category];
   const anyFilter = types.length + conditions.length + positions.length > 0;
+  // Everything in the category for this car: chips only offer what can match.
+  const forCar = anyFilter ? await getParts({ category, vehicleId: filter?.id }) : parts;
+  // Nothing in the category for any car: skip the filters and say so.
+  const listed = filter && forCar.length === 0 ? (await getParts({ category })).length : forCar.length;
+  const offered = <T extends string>(values: readonly T[], active: T[], field: (p: Part) => T) =>
+    values.filter((v) => active.includes(v) || forCar.some((p) => field(p) === v));
+  const typeChips = offered(typeOptions, types, (p) => p.type);
+  const positionChips = offered(positionOptions, positions, (p) => p.position);
+  const conditionChips = offered(CONDITIONS, conditions, (p) => p.condition);
+  // A row with one chip left would only repeat the list as it is.
+  const worthShowing = (chips: readonly string[], active: string[]) => chips.length > 1 || active.length > 0;
+
+  if (listed === 0) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 pt-8">
+        <h1 className="text-5xl leading-none font-bold">{info.label}</h1>
+        <p className="mt-2 text-[17px]">{info.blurb}</p>
+        <div className="mt-6 rounded-md bg-paper px-5 py-8 sm:px-8">
+          <h2 className="text-3xl">Not listed online yet</h2>
+          <p className="mt-2 max-w-[52ch]">
+            The shop stocks {info.blurb.toLowerCase()} for many Toyota and Lexus models. Tell us your
+            car and the part, and we&apos;ll send photos and a price.
+          </p>
+          <a
+            href={whatsappLink(
+              `Hello, I'm looking for ${info.label.toLowerCase()}${selected ? ` for my ${vehicleLabel(selected)}` : ""}.`,
+            )}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-5 inline-flex h-11 items-center gap-2 rounded-md bg-tan px-4 font-semibold hover:shadow-[inset_0_0_0_2px_var(--color-navy)]"
+          >
+            <MessageCircle aria-hidden className="size-[18px]" />
+            Ask on WhatsApp
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 pt-8">
@@ -80,10 +118,10 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/sho
       </div>
 
       <div className="mt-5 flex flex-col gap-3">
-        {typeOptions.length > 1 ? (
+        {worthShowing(typeChips, types) ? (
           <FilterChips
             label="Part"
-            options={typeOptions.map((t) => ({
+            options={typeChips.map((t) => ({
               value: t,
               label: TYPE_INFO[t].plural,
               href: toggleHref(pathname, sp, "type", t),
@@ -91,24 +129,28 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/sho
             }))}
           />
         ) : null}
-        <FilterChips
-          label="Position"
-          options={positionOptions.map((p) => ({
-            value: p,
-            label: POSITION_INFO[p].label,
-            href: toggleHref(pathname, sp, "position", p),
-            active: positions.includes(p),
-          }))}
-        />
-        <FilterChips
-          label="Condition"
-          options={CONDITIONS.map((c) => ({
-            value: c,
-            label: CONDITION_INFO[c].label,
-            href: toggleHref(pathname, sp, "condition", c),
-            active: conditions.includes(c),
-          }))}
-        />
+        {worthShowing(positionChips, positions) ? (
+          <FilterChips
+            label="Position"
+            options={positionChips.map((p) => ({
+              value: p,
+              label: POSITION_INFO[p].label,
+              href: toggleHref(pathname, sp, "position", p),
+              active: positions.includes(p),
+            }))}
+          />
+        ) : null}
+        {worthShowing(conditionChips, conditions) ? (
+          <FilterChips
+            label="Condition"
+            options={conditionChips.map((c) => ({
+              value: c,
+              label: CONDITION_INFO[c].label,
+              href: toggleHref(pathname, sp, "condition", c),
+              active: conditions.includes(c),
+            }))}
+          />
+        ) : null}
       </div>
 
       <div className="mt-6 flex items-baseline justify-between border-t border-primer pt-4">
@@ -138,7 +180,7 @@ export default async function ShopPage({ params, searchParams }: PageProps<"/sho
               )}
               target="_blank"
               rel="noreferrer"
-              className="mt-5 inline-flex h-11 items-center gap-2 rounded-md border border-graphite px-4 font-semibold hover:bg-bay"
+              className="mt-5 inline-flex h-11 items-center gap-2 rounded-md border border-navy px-4 font-semibold hover:bg-bay"
             >
               <MessageCircle aria-hidden className="size-[18px]" />
               Ask on WhatsApp

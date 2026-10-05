@@ -190,9 +190,35 @@ class GoogleExchangeIn(ApiModel):
     code: str = Field(max_length=2000)
 
 
+class GoogleIdTokenIn(ApiModel):
+    id_token: str = Field(max_length=4096)
+
+
 class SessionOut(ApiModel):
     token: str
     user: UserOut
+    # Signing up and signing in are one Google flow; True when this one made the account.
+    created: bool
+
+
+class CartLineIn(ApiModel):
+    sku: str = Field(max_length=64)
+    qty: int = Field(ge=1, le=99)
+
+
+class CartLineOut(ApiModel):
+    sku: str
+    qty: int
+
+
+class SavedCartIn(ApiModel):
+    lines: list[CartLineIn] = Field(max_length=50)
+
+
+class SavedCartOut(ApiModel):
+    """A signed-in buyer's cart, the same on the website and the phone. Prices are read at checkout."""
+
+    lines: list[CartLineOut]
 
 
 # --- Admin ------------------------------------------------------------------

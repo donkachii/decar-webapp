@@ -2,6 +2,7 @@
 
 import { MessageCircle } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 import {
   CartLineList,
@@ -11,12 +12,17 @@ import {
 } from "@/components/cart-lines";
 import { Button } from "@/components/ui/button";
 import { ChooseCarButton } from "@/components/vehicle-picker";
-import { useCartDetails } from "@/lib/cart";
+import { refreshSavedCart, useCartDetails } from "@/lib/cart";
 import { DELIVERY_OPTIONS, DELIVERY_ORDER, deliveryFee, type DeliveryRates } from "@/lib/orders/delivery";
 import { formatNGN } from "@/lib/format";
 
 export function CartPageView({ vehicleId, rates }: { vehicleId: string | null; rates: DeliveryRates }) {
   const { lines, parts, vehicle, loading, failed, empty } = useCartDetails(vehicleId);
+
+  // Lines added on the phone since this page loaded.
+  useEffect(() => {
+    void refreshSavedCart();
+  }, []);
   const summary = summariseCart(lines, parts);
   const classes = summary.ready.map((r) => r.part.shippingClass);
 

@@ -1,4 +1,5 @@
 import { UserRound } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { CartButton } from "@/components/cart-drawer";
@@ -11,12 +12,8 @@ import type { Vehicle } from "@/lib/catalog/types";
 export function Wordmark() {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2 rounded-sm" aria-label="De Car Revolutionist, home">
-      <span
-        aria-hidden
-        className="grid size-9 place-items-center rounded-[5px] bg-graphite font-display text-[17px] leading-none font-bold tracking-tight text-paper"
-      >
-        DC
-      </span>
+      {/* White mark on its wine tile, drawn by scripts/brand-assets.mjs. */}
+      <Image src="/brand/mark-tile.svg" alt="" width={40} height={40} loading="eager" className="size-10" />
       <span aria-hidden className="font-display text-[19px] leading-[0.95] font-bold">
         De Car
         <br />

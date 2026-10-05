@@ -271,7 +271,7 @@ export function CheckoutForm({
             href={cartWhatsappLink(summary, vehicle?.label ?? null)}
             target="_blank"
             rel="noreferrer"
-            className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-graphite font-semibold hover:bg-bay"
+            className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-navy font-semibold hover:bg-bay"
           >
             <MessageCircle aria-hidden className="size-[18px]" />
             Complete order on WhatsApp
@@ -348,8 +348,8 @@ function ChoiceCard({
       htmlFor={id}
       className={cn(
         "flex cursor-pointer items-start gap-3 rounded-md border-2 bg-paper px-3.5 py-3 transition-colors",
-        "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-graphite",
-        checked ? "border-amber" : "border-transparent hover:border-primer",
+        "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-navy",
+        checked ? "border-tan" : "border-transparent hover:border-primer",
         disabled && "cursor-not-allowed opacity-55 hover:border-transparent",
       )}
     >
@@ -367,10 +367,10 @@ function ChoiceCard({
         aria-hidden
         className={cn(
           "mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border-2",
-          checked ? "border-graphite bg-amber" : "border-primer",
+          checked ? "border-navy bg-tan" : "border-primer",
         )}
       >
-        {checked ? <span className="size-2 rounded-full bg-graphite" /> : null}
+        {checked ? <span className="size-2 rounded-full bg-navy" /> : null}
       </span>
       <span className="min-w-0 flex-1">
         <span className="block font-semibold">{title}</span>

@@ -23,7 +23,7 @@ export function SiteNav({ className }: { className?: string }) {
                 className={cn(
                   "flex h-11 items-center justify-center px-3 font-display text-lg font-semibold",
                   "border-b-[3px] transition-colors",
-                  active ? "border-graphite" : "border-transparent hover:border-primer",
+                  active ? "border-navy" : "border-transparent hover:border-primer",
                 )}
               >
                 {CATEGORY_INFO[category].label}

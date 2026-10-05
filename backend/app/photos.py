@@ -12,7 +12,8 @@ The folder sits at the repo root, beside backend/ and frontend/:
 
 Each photo goes to Cloudinary as decar/<its path without the extension>, so the
 Media Library mirrors this folder. Linking sets a part's images to its folder's
-photos; parts without a folder keep theirs. Files that aren't photos (notes,
+photos; parts without a folder keep theirs. Folders for draft parts (in seed/
+without a price or stock count yet) are skipped until the part is live. Files that aren't photos (notes,
 videos) are ignored. Needs CLOUDINARY_URL, except for --check.
 """
 
@@ -31,6 +32,7 @@ from app.config import get_settings
 from app.db import get_sessionmaker
 from app.domain.sku import is_valid_sku
 from app.models import Part
+from app.seed import load_seed
 from app.services import cloudinary
 from app.services.cloudinary import Account, CloudinaryError
 
@@ -85,6 +87,12 @@ def plan_photos(root: Path) -> Plan:
     return plan
 
 
+def skip_folders(plan: Plan, skus: list[str]) -> None:
+    """Leaves these parts' folders out of the upload and the linking."""
+    skipped = {pid for sku in skus for pid in plan.links.pop(sku)}
+    plan.photos = [p for p in plan.photos if p.public_id not in skipped]
+
+
 async def known_skus(skus: list[str]) -> set[str]:
     async with get_sessionmaker()() as session:
         return set((await session.scalars(select(Part.sku).where(Part.sku.in_(skus)))).all())
@@ -130,13 +138,18 @@ async def link_parts(account: Account, links: dict[str, list[str]], versions: di
 async def run(root: Path, *, check: bool, replace: bool) -> None:
     plan = plan_photos(root)
     # Every SKU folder must name a real part before anything uploads, so a typo
-    # never leaves photos on Cloudinary that nothing links to.
+    # never leaves photos on Cloudinary that nothing links to. Folders for draft
+    # parts (in seed/ but not priced yet) wait until the part goes live.
     if plan.links:
-        known = await known_skus(list(plan.links))
+        missing = set(plan.links) - await known_skus(list(plan.links))
+        waiting = sorted(missing & {p.sku for p in load_seed().drafts})
         plan.errors.extend(
             f"parts/{sku}: no part with this SKU in the database; add the part first"
-            for sku in sorted(set(plan.links) - known)
+            for sku in sorted(missing - set(waiting))
         )
+        if waiting:
+            skip_folders(plan, waiting)
+            print(f"… {len(waiting)} draft part folder(s) skipped until the part has a price and stock count")
     if plan.errors:
         raise SystemExit(f"✗ {len(plan.errors)} problem(s):\n  " + "\n  ".join(plan.errors))
 

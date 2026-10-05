@@ -1,4 +1,4 @@
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
 import Link from "next/link";
 
 import { CATEGORY_INFO } from "@/lib/catalog/labels";
@@ -8,15 +8,29 @@ import { whatsappLink } from "@/lib/whatsapp";
 
 export function SiteFooter() {
   return (
-    <footer className="on-dark mt-16 bg-graphite text-paper">
+    <footer className="on-dark mt-16 bg-wine text-paper">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <p className="font-display text-2xl leading-tight font-bold">{SITE.name}</p>
+          <p className="mt-1 text-[15px] text-primer">{SITE.tagline}</p>
           <address className="mt-3 text-[15px] leading-relaxed not-italic text-primer">
             {SITE.shopLine}
             <br />
             {SITE.marketLine}
           </address>
+          <ul className="mt-2 flex flex-wrap gap-x-5">
+            {SITE.phones.map((p) => (
+              <li key={p.tel}>
+                <a
+                  href={`tel:${p.tel}`}
+                  className="inline-flex items-center gap-2 py-1 tabular-nums text-primer hover:text-paper"
+                >
+                  <Phone aria-hidden className="size-4" />
+                  {p.label}
+                </a>
+              </li>
+            ))}
+          </ul>
           <a
             href={whatsappLink(`Hello ${SITE.name}, I'm looking for a part.`)}
             target="_blank"

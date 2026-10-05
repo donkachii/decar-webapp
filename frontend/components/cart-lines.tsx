@@ -168,7 +168,7 @@ function RemoveButton({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="h-9 rounded-sm px-2 text-sm font-semibold underline decoration-primer underline-offset-2 hover:decoration-graphite"
+      className="h-9 rounded-sm px-2 text-sm font-semibold underline decoration-primer underline-offset-2 hover:decoration-navy"
     >
       Remove
     </button>
@@ -187,7 +187,7 @@ function QtyStepper({
   label: string;
 }) {
   const btn =
-    "grid size-9 place-items-center rounded-sm border border-primer bg-paper hover:border-graphite disabled:opacity-40";
+    "grid size-9 place-items-center rounded-sm border border-primer bg-paper hover:border-navy disabled:opacity-40";
   return (
     <div className="flex items-center gap-1" role="group" aria-label={`Quantity of ${label}`}>
       <button type="button" className={btn} onClick={() => onChange(qty - 1)} disabled={qty <= 1} aria-label="One fewer">

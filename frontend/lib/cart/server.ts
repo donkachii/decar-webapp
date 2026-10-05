@@ -5,7 +5,7 @@ import { partTitle, vehicleLabel, vehicleShortLabel } from "@/lib/catalog/labels
 import { normaliseSku } from "@/lib/catalog/sku";
 import { isBelgium, type Vehicle } from "@/lib/catalog/types";
 
-import type { CartDetailsResponse } from "./types";
+import type { CartDetailsResponse, CartLine } from "./types";
 
 export function parseSkuList(input: unknown, limit = 50): string[] {
   if (!Array.isArray(input)) return [];
@@ -14,6 +14,19 @@ export function parseSkuList(input: unknown, limit = 50): string[] {
     .map((v) => normaliseSku(v))
     .filter((v): v is string => v !== null);
   return [...new Set(skus)].slice(0, limit);
+}
+
+/** Cart lines from a request body: valid SKUs, whole quantities from 1 to 99, one line per SKU. */
+export function parseCartLines(input: unknown, limit = 50): CartLine[] {
+  if (!Array.isArray(input)) return [];
+  const lines = new Map<string, number>();
+  for (const item of input) {
+    const { sku, qty } = (item ?? {}) as { sku?: unknown; qty?: unknown };
+    const normal = typeof sku === "string" ? normaliseSku(sku) : null;
+    if (!normal || typeof qty !== "number" || !Number.isInteger(qty) || qty < 1) continue;
+    lines.set(normal, Math.max(Math.min(qty, 99), lines.get(normal) ?? 0));
+  }
+  return [...lines].slice(0, limit).map(([sku, qty]) => ({ sku, qty }));
 }
 
 /** Fresh status, price and fitment for cart lines (CLAUDE.md section 7). */

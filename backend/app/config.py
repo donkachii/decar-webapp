@@ -5,6 +5,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 SITE_NAME = "De Car Revolutionist"
 SITE_ADDRESS = "Shop C12/111, Igbo-Ukwu Line, Zuba Spare Parts Market, Abuja"
+# Both numbers take calls and WhatsApp chats. The first is the WhatsApp link
+# unless WHATSAPP_NUMBER says otherwise.
+SITE_PHONES = ("0816 645 6295", "0901 539 6483")
+SITE_WHATSAPP = "2348166456295"
 
 # Signs session tokens when APP_ENV is development or test and SESSION_SECRET is
 # empty, so a fresh clone runs without any setup. Production refuses to start.
@@ -35,6 +39,10 @@ class Settings(BaseSettings):
     session_secret: str = ""
     google_client_id: str = ""
     google_client_secret: str = ""
+    # The phone app's OAuth client IDs (iOS, Android), comma-separated. The app
+    # signs in on the phone and sends Google's ID token; tokens issued to these
+    # clients or to GOOGLE_CLIENT_ID are accepted.
+    google_mobile_client_ids: str = ""
     admin_emails: str = ""
 
     gmail_user: str = ""
@@ -48,11 +56,16 @@ class Settings(BaseSettings):
     cloudinary_url: str = ""
 
     # Shop WhatsApp number, international format, digits only (2348012345678).
+    # Empty uses SITE_WHATSAPP.
     whatsapp_number: str = ""
 
     @property
     def sqlalchemy_url(self) -> str:
         return sqlalchemy_url(self.database_url)
+
+    @property
+    def whatsapp_digits(self) -> str:
+        return "".join(c for c in self.whatsapp_number if c.isdigit()) or SITE_WHATSAPP
 
     @property
     def frontend_origin(self) -> str:
@@ -65,6 +78,12 @@ class Settings(BaseSettings):
     @property
     def admin_email_set(self) -> frozenset[str]:
         return frozenset(e.strip().lower() for e in self.admin_emails.split(",") if e.strip())
+
+    @property
+    def google_audiences(self) -> list[str]:
+        """Client IDs a Google ID token may be issued to: the website's, then the app's."""
+        ids = [self.google_client_id, *self.google_mobile_client_ids.split(",")]
+        return [i.strip() for i in ids if i.strip()]
 
     @property
     def google_enabled(self) -> bool:

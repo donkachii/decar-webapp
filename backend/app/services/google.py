@@ -1,8 +1,11 @@
-"""Google sign-in (OpenID Connect, authorization-code flow).
+"""Google sign-in (OpenID Connect).
 
-The frontend sends the buyer to authorization_url(); Google redirects back to
-the frontend's /auth/callback, which hands the code to exchange_code() here.
-Only the API holds the client secret.
+Website: the frontend sends the buyer to authorization_url(); Google redirects
+back to the frontend's /auth/callback, which hands the code to exchange_code()
+here. Only the API holds the client secret.
+
+Phone app: Google signs the buyer in on the phone and gives the app an ID
+token, which verify_id_token() checks against the configured client IDs.
 """
 
 from dataclasses import dataclass
@@ -57,7 +60,7 @@ def _verify_id_token(settings: Settings, id_token: str) -> GoogleIdentity:
         id_token,
         key.key,
         algorithms=["RS256"],
-        audience=settings.google_client_id,
+        audience=settings.google_audiences,
         options={"require": ["iss", "sub", "aud", "exp"]},
     )
     if claims.get("iss") not in ISSUERS:
@@ -90,6 +93,10 @@ async def exchange_code(settings: Settings, code: str) -> GoogleIdentity:
     id_token = body.get("id_token") if isinstance(body, dict) else None
     if not res.is_success or not isinstance(id_token, str):
         raise GoogleSignInError(f"Google rejected the code: {res.status_code}")
+    return await verify_id_token(settings, id_token)
+
+
+async def verify_id_token(settings: Settings, id_token: str) -> GoogleIdentity:
     try:
         # PyJWKClient fetches Google's keys with blocking I/O.
         return await run_in_threadpool(_verify_id_token, settings, id_token)

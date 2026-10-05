@@ -18,7 +18,7 @@ const ZONE_AREA: Record<Zone, string> = {
 export function PositionDiagram({ zone, className }: { zone: Zone; className?: string }) {
   return (
     <div aria-hidden className={cn("relative aspect-[300/440] w-[84px] shrink-0", className)}>
-      <span className={cn("absolute rounded-[4px] border-2 border-graphite bg-bay", ZONE_AREA[zone])} />
+      <span className={cn("absolute rounded-[4px] border-2 border-navy bg-bay", ZONE_AREA[zone])} />
       <CarTopView className="absolute inset-0 size-full" />
     </div>
   );

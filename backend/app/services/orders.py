@@ -16,6 +16,7 @@ from app.domain.checkout import Checkout
 from app.domain.delivery import delivery_fee
 from app.domain.labels import part_title
 from app.models import Order, OrderItem, Part, Vehicle, order_number_seq
+from app.services import carts
 
 
 @dataclass(frozen=True)
@@ -90,6 +91,10 @@ async def place_order(
         part.stock_qty -= line.qty
         if is_belgium(part.condition) or part.stock_qty == 0:
             part.status = "reserved"
+
+    # Ordered parts leave the buyer's saved cart, so the other device doesn't bring them back.
+    if user_id is not None:
+        await carts.forget_ordered(session, user_id, skus)
 
     await session.commit()
     return order

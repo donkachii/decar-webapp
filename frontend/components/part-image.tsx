@@ -1,11 +1,14 @@
 import Image from "next/image";
 import { cn } from "cn";
 
+import { isDrawing } from "@/lib/catalog/images";
 import type { Position } from "@/lib/catalog/types";
 
 /**
- * Square image well on paper. Placeholder drawings in /parts are drawn as the
- * right-hand part and mirrored for left-hand positions; real photos never are.
+ * Square image well on paper. Photos fill the well (`cover`) on cards and
+ * thumbnails; the product page shows the whole part (`contain`). Placeholder
+ * drawings are drawn as the right-hand part and mirrored for left-hand
+ * positions; real photos never are.
  */
 export function PartImage({
   src,
@@ -13,6 +16,7 @@ export function PartImage({
   position,
   sizes,
   preload = false,
+  fit = "cover",
   className,
 }: {
   src: string | null | undefined;
@@ -20,9 +24,10 @@ export function PartImage({
   position: Position;
   sizes: string;
   preload?: boolean;
+  fit?: "cover" | "contain";
   className?: string;
 }) {
-  const drawing = !src || src.startsWith("/parts/");
+  const drawing = isDrawing(src);
   const flip = drawing && position.endsWith("left");
 
   return (
@@ -35,7 +40,10 @@ export function PartImage({
           sizes={sizes}
           preload={preload}
           unoptimized={drawing}
-          className={cn("object-contain", drawing && "p-[14%]", flip && "-scale-x-100")}
+          className={cn(
+            drawing ? "object-contain p-[14%]" : fit === "cover" ? "object-cover" : "object-contain",
+            flip && "-scale-x-100",
+          )}
         />
       ) : null}
     </div>

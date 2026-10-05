@@ -2,12 +2,13 @@
 
 Online shop for foreign-used genuine ("Belgium") and new Toyota and Lexus body parts from Shop C12/111, Zuba Spare Parts Market, Abuja.
 
-Two apps:
+Three apps:
 
 | Folder | What | Stack |
 |---|---|---|
 | `backend/` | API: catalog, fitment, stock, orders, Google sign-in, Paystack, order emails | FastAPI, SQLAlchemy 2 + Alembic, Postgres, uv |
 | `frontend/` | The storefront and the owner's `/admin` page | Next.js 16, TypeScript, Tailwind v4, shadcn/ui, pnpm |
+| `mobile/` | The buyer's shop as an iOS and Android app ([mobile/README.md](mobile/README.md)) | Expo SDK 57, Expo Router, TypeScript, pnpm |
 
 The database is Postgres: your own locally, Supabase in production. The backend connects with one connection string (`DATABASE_URL`). There are no Supabase API keys, and the frontend holds no secrets at all.
 
@@ -23,7 +24,7 @@ cp .env.example .env          # defaults work as they are
 createdb decar
 uv sync
 uv run alembic upgrade head   # tables, rules, order numbers
-uv run python -m app.seed     # 10 placeholder vehicles, 36 parts
+uv run python -m app.seed      # the shop's catalog (priced parts only)
 uv run uvicorn app.main:app --reload
 ```
 
@@ -63,7 +64,7 @@ Supabase hosts the database, not Python apps, so the API runs on a Python host s
 
 ### 3. Frontend hosting
 
-Deploy `frontend/` to Vercel (set **Root Directory** to `frontend`). Set `NEXT_PUBLIC_SITE_URL` to the live URL, `API_URL` to the backend's URL and `NEXT_PUBLIC_WHATSAPP_NUMBER`. The build doesn't need the API running.
+Deploy `frontend/` to Vercel (set **Root Directory** to `frontend`). Set `NEXT_PUBLIC_SITE_URL` to the live URL, `API_URL` to the backend's URL, and `NEXT_PUBLIC_WHATSAPP_NUMBER` only if WhatsApp should go to a number other than 0816 645 6295. The build doesn't need the API running.
 
 ## Google sign-in
 
@@ -74,6 +75,7 @@ Optional for buyers (past orders, faster checkout) and required for the owner's 
    - `http://localhost:3000/auth/callback`
    - `https://<your-live-domain>/auth/callback`
 3. In `backend/.env`, set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `ADMIN_EMAILS` (the owner's Google address; comma-separate several).
+4. For the phone app, add an iOS and an Android OAuth client and list both in `GOOGLE_MOBILE_CLIENT_IDS`. See [mobile/README.md](mobile/README.md#google-sign-in).
 
 ## Order emails (no domain needed)
 
@@ -107,16 +109,28 @@ To link parts in the live database, run the same command with the production con
 | `backend/` | `uv run uvicorn app.main:app --reload` | API dev server |
 | `backend/` | `uv run alembic upgrade head` | Apply migrations |
 | `backend/` | `uv run alembic revision --autogenerate -m "…"` | New migration from `app/models.py` (review it before applying) |
-| `backend/` | `uv run python -m app.seed [--check]` | Check `seed/*.json` against the domain rules; without `--check`, also insert missing rows |
+| `backend/` | `uv run python -m app.seed [--check] [--prune]` | Check `seed/*.json` against the domain rules; without `--check`, also insert priced parts that are missing. `--prune` deletes parts and vehicles no longer in `seed/` (never parts on an order) |
 | `backend/` | `uv run python -m app.photos [--check]` | Upload `../photos/` to Cloudinary and link `photos/parts/<SKU>/` folders to their parts; `--check` uploads nothing |
-| `backend/` | `uv run pytest` | Tests. The API tests need `createdb decar_test` |
-| `backend/` | `uv run ruff check . && uv run mypy app tests` | Lint and strict type check |
+| `backend/` | `uv run ruff check . && uv run mypy app` | Lint and strict type check |
 | `frontend/` | `pnpm dev` / `pnpm build` | Dev server / production build |
 | `frontend/` | `pnpm lint` / `pnpm typecheck` | ESLint / TypeScript |
+| `mobile/` | `pnpm start` | Expo dev server (open in Expo Go or a development build) |
+| `mobile/` | `pnpm lint` / `pnpm typecheck` / `npx expo-doctor` | ESLint / TypeScript / dependency and config check |
+
+## Going live with real stock
+
+`backend/seed/` holds the real catalog and `photos/parts/<SKU>/` holds each part's photos. To put them on the live site, from `backend/` with `DATABASE_URL` pointing at the live database:
+
+1. In `seed/parts.json`, set `priceNGN` and `stockQty` on each part you can sell. Leave a part's `null`s in to keep it off the site.
+2. `uv run python -m app.seed --check` lists what is still a draft.
+3. `uv run python -m app.seed --prune` deletes the old placeholder parts and vehicles and inserts the priced parts. Their "Stock checked" time is the moment they go in.
+4. With `CLOUDINARY_URL` in `.env`: `uv run python -m app.photos`. It uploads the photos and links them to the parts that are now live; draft folders wait for the next run.
+
+Repeat 1, 2, 3 (without `--prune` once the placeholders are gone) and 4 as more parts get prices.
 
 ## Still placeholder
 
-- Vehicles, parts, prices and grades in `backend/seed/` until the owner confirms them from his stock.
+- Prices and stock counts for the real catalog in `backend/seed/parts.json`. Its 27 parts come from the owner's labelled photos and are drafts (`"priceNGN": null`, `"stockQty": null`) until he fills both in; drafts never reach the site. See "Going live with real stock" below.
 - Delivery rates in `backend/app/domain/delivery.py`.
-- Part images are line drawings until a part gets a `photos/parts/<SKU>/` folder (see "Part photos"). `photos/library/` holds the owner's first batch of photos, sorted by type and the model written on them but not yet matched to parts.
-- The mission, vision and values text on `/about`.
+- Lights and bumpers: the library has many photos of them, but none says which car they fit, so none are listed yet.
+- Links to the Facebook, Instagram and TikTok pages: `/about` names the accounts but has no profile URLs yet.

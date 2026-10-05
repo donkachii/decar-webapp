@@ -19,6 +19,7 @@ export function PartGallery({ images, alt, position }: { images: string[]; alt: 
         position={position}
         sizes="(min-width: 1024px) 560px, 100vw"
         preload
+        fit="contain"
         className="rounded-lg"
       />
       {images.length > 1 ? (
@@ -32,7 +33,7 @@ export function PartGallery({ images, alt, position }: { images: string[]; alt: 
                 aria-current={i === index ? "true" : undefined}
                 className={cn(
                   "block overflow-hidden rounded-md border-2",
-                  i === index ? "border-graphite" : "border-transparent hover:border-primer",
+                  i === index ? "border-navy" : "border-transparent hover:border-primer",
                 )}
               >
                 <PartImage src={src} alt="" position={position} sizes="72px" className="size-[72px]" />

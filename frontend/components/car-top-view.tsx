@@ -10,14 +10,14 @@ export function CarTopView({ className }: { className?: string }) {
       aria-hidden
       className={className}
       fill="none"
-      stroke="var(--color-graphite)"
+      stroke="var(--color-navy)"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
     >
       <g transform="translate(0 20)">
         {/* wheels */}
-        <g fill="var(--color-graphite)" stroke="none">
+        <g fill="var(--color-navy)" stroke="none">
           <rect x="57" y="74" width="10" height="38" rx="3" />
           <rect x="233" y="74" width="10" height="38" rx="3" />
           <rect x="57" y="290" width="10" height="38" rx="3" />

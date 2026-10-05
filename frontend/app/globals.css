@@ -5,18 +5,20 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
-  Inspection-bay palette (CLAUDE.md section 8). Tailwind's default colours are
-  wiped so nothing outside this list can be used by accident.
-  Contrast notes: amber is never text on light grounds and always carries
-  graphite text. Primer is for rules, icons and text on graphite only.
+  Brand palette (CLAUDE.md section 8). Tailwind's default colours are wiped so
+  nothing outside this list can be used by accident.
+  Contrast notes: tan is never text on light grounds and always carries navy
+  text (8.7:1). Wine carries paper text (14.4:1). Primer is for rules, icons and
+  text on navy (5.6:1) or wine (4.5:1, the minimum: never lighten wine) only.
 */
 @theme {
   --color-*: initial;
   --color-primer: #8b9196;
   --color-bay: #eceef0;
   --color-paper: #ffffff;
-  --color-graphite: #23272b;
-  --color-amber: #e39a0b;
+  --color-navy: #051632;
+  --color-wine: #4e1526;
+  --color-tan: #d6ae73;
   --color-fit: #1e7a4c;
   --color-warn: #b4441c;
 
@@ -65,23 +67,23 @@
 
 :root {
   --background: var(--color-bay);
-  --foreground: var(--color-graphite);
+  --foreground: var(--color-navy);
   --card: var(--color-paper);
-  --card-foreground: var(--color-graphite);
+  --card-foreground: var(--color-navy);
   --popover: var(--color-paper);
-  --popover-foreground: var(--color-graphite);
-  --primary: var(--color-amber);
-  --primary-foreground: var(--color-graphite);
+  --popover-foreground: var(--color-navy);
+  --primary: var(--color-tan);
+  --primary-foreground: var(--color-navy);
   --secondary: var(--color-bay);
-  --secondary-foreground: var(--color-graphite);
+  --secondary-foreground: var(--color-navy);
   --muted: var(--color-bay);
-  --muted-foreground: var(--color-graphite);
+  --muted-foreground: var(--color-navy);
   --accent: var(--color-bay);
-  --accent-foreground: var(--color-graphite);
+  --accent-foreground: var(--color-navy);
   --destructive: var(--color-warn);
   --border: var(--color-primer);
   --input: var(--color-primer);
-  --ring: var(--color-graphite);
+  --ring: var(--color-navy);
   --radius: 0.375rem;
 }
 
@@ -107,9 +109,9 @@
     cursor: pointer;
   }
 
-  /* One focus style everywhere: a graphite outline, paper on dark grounds. */
+  /* One focus style everywhere: a navy outline, paper on dark grounds. */
   :focus-visible {
-    outline: 2px solid var(--color-graphite);
+    outline: 2px solid var(--color-navy);
     outline-offset: 2px;
   }
   .on-dark :focus-visible {

@@ -31,5 +31,7 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: GOOGLE_MOBILE_CLIENT_IDS
+        sync: false
       - key: ADMIN_EMAILS
         sync: false

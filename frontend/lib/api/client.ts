@@ -25,7 +25,7 @@ export class ApiError extends Error {
 type QueryValue = string | number | boolean | readonly string[] | null | undefined;
 
 interface ApiOptions {
-  method?: "GET" | "POST";
+  method?: "GET" | "POST" | "PUT";
   query?: Record<string, QueryValue>;
   body?: unknown;
   /** Send the signed-in user's session token, if there is one. */
