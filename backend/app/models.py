@@ -187,6 +187,25 @@ class User(Base):
     last_sign_in_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
 
+class CartLine(Base):
+    """A signed-in buyer's saved cart, so the website and the phone app show the same one.
+
+    SKU and quantity only, like the clients' carts. Saving never reserves a unit
+    (CLAUDE.md section 7); checkout re-reads status and price.
+    """
+
+    __tablename__ = "cart_lines"
+    __table_args__ = (CheckConstraint("qty > 0", name="qty_check"),)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    # A part pruned from the catalog leaves every cart with it.
+    sku: Mapped[str] = mapped_column(
+        ForeignKey("parts.sku", ondelete="CASCADE", onupdate="CASCADE"), primary_key=True
+    )
+    qty: Mapped[int]
+    line_no: Mapped[int]  # the order the buyer added them in
+
+
 order_number_seq = Sequence("order_number_seq", metadata=Base.metadata)
 
 

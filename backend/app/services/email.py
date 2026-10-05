@@ -14,15 +14,15 @@ from email.utils import formataddr
 from html import escape
 from urllib.parse import quote
 
-from app.config import SITE_ADDRESS, SITE_NAME, Settings
+from app.config import SITE_ADDRESS, SITE_NAME, SITE_PHONES, Settings
 from app.domain.delivery import DELIVERY_LABELS
 from app.domain.labels import format_ngn
 from app.schemas import OrderOut
 
 log = logging.getLogger(__name__)
 
-# Design tokens (CLAUDE.md section 8). Amber only on the one action button.
-BAY, PAPER, GRAPHITE, AMBER = "#ECEEF0", "#FFFFFF", "#23272B", "#E39A0B"
+# Design tokens (CLAUDE.md section 8). Tan only on the one action button.
+BAY, PAPER, NAVY, TAN = "#ECEEF0", "#FFFFFF", "#051632", "#D6AE73"
 
 
 @dataclass(frozen=True)
@@ -54,9 +54,7 @@ def send_mail(settings: Settings, mail: Mail) -> bool:
 
 
 def _whatsapp_link(settings: Settings, message: str) -> str:
-    number = "".join(c for c in settings.whatsapp_number if c.isdigit())
-    base = f"https://wa.me/{number}" if number else "https://wa.me/"
-    return f"{base}?text={quote(message)}"
+    return f"https://wa.me/{settings.whatsapp_digits}?text={quote(message)}"
 
 
 def _delivery_text(order: OrderOut) -> str:
@@ -108,7 +106,7 @@ def _items_table(order: OrderOut) -> str:
 
 
 def _layout(title: str, body: str) -> str:
-    return f"""<!doctype html><html><body style="margin:0;background:{BAY};font-family:Arial,Helvetica,sans-serif;color:{GRAPHITE};">
+    return f"""<!doctype html><html><body style="margin:0;background:{BAY};font-family:Arial,Helvetica,sans-serif;color:{NAVY};">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{BAY};padding:24px 12px;">
 <tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:{PAPER};border-radius:8px;">
@@ -118,7 +116,7 @@ def _layout(title: str, body: str) -> str:
 </td></tr>
 <tr><td style="padding:8px 24px 24px;font-size:15px;line-height:1.5;">{body}</td></tr>
 </table>
-<p style="font-size:12px;color:{GRAPHITE};margin:16px 0 0;">{escape(SITE_ADDRESS)}</p>
+<p style="font-size:12px;color:{NAVY};margin:16px 0 0;">{escape(SITE_ADDRESS)}<br>Call or chat: {escape(", ".join(SITE_PHONES))}</p>
 </td></tr></table></body></html>"""
 
 
@@ -160,13 +158,14 @@ def buyer_email(settings: Settings, order: OrderOut, vehicle_label: str | None) 
 {_items_table(order)}
 <p style="margin:16px 0 4px;"><strong>Delivery:</strong> {escape(_delivery_text(order))}</p>
 <p style="margin:0 0 20px;"><strong>Payment:</strong> {escape(_payment_text(order))}</p>
-<p style="margin:0 0 12px;"><a href="{escape(wa)}" style="display:inline-block;background:{AMBER};color:{GRAPHITE};font-weight:700;text-decoration:none;padding:12px 18px;border-radius:6px;">Complete order on WhatsApp</a></p>
-<p style="margin:0;"><a href="{escape(order_url)}" style="color:{GRAPHITE};">View your order</a></p>""",
+<p style="margin:0 0 12px;"><a href="{escape(wa)}" style="display:inline-block;background:{TAN};color:{NAVY};font-weight:700;text-decoration:none;padding:12px 18px;border-radius:6px;">Complete order on WhatsApp</a></p>
+<p style="margin:0;"><a href="{escape(order_url)}" style="color:{NAVY};">View your order</a></p>""",
     )
     text = (
         f"Order {order.number} received.\n\n{_items_text(order)}\n\n"
         f"Delivery: {_delivery_text(order)}\nPayment: {_payment_text(order)}\n\n"
-        f"View your order: {order_url}\nComplete on WhatsApp: {wa}"
+        f"View your order: {order_url}\nComplete on WhatsApp: {wa}\n\n"
+        f"{SITE_ADDRESS}\nCall or chat: {', '.join(SITE_PHONES)}"
     )
     return subject, html, text
 
@@ -187,15 +186,15 @@ def owner_email(settings: Settings, order: OrderOut, vehicle_label: str | None) 
     html = _layout(
         f"New order {order.number}",
         f"""<p style="margin:0 0 4px;"><strong>{escape(order.customer_name)}</strong></p>
-<p style="margin:0 0 4px;"><a href="tel:{escape(order.customer_phone)}" style="color:{GRAPHITE};">{escape(order.customer_phone)}</a>
-  &nbsp;<a href="https://wa.me/{phone_digits}" style="color:{GRAPHITE};">WhatsApp</a></p>
+<p style="margin:0 0 4px;"><a href="tel:{escape(order.customer_phone)}" style="color:{NAVY};">{escape(order.customer_phone)}</a>
+  &nbsp;<a href="https://wa.me/{phone_digits}" style="color:{NAVY};">WhatsApp</a></p>
 {email_line}
 <p style="margin:0 0 16px;">Car: {car}</p>
 {_items_table(order)}
 <p style="margin:16px 0 4px;"><strong>Delivery:</strong> {escape(_delivery_text(order))}</p>
 <p style="margin:0 0 4px;"><strong>Payment:</strong> {escape(_payment_text(order))}</p>
 {notes_line}
-<p style="margin:20px 0 0;">Units are reserved until you complete or cancel the order in <a href="{admin_url}" style="color:{GRAPHITE};">admin</a>.</p>""",
+<p style="margin:20px 0 0;">Units are reserved until you complete or cancel the order in <a href="{admin_url}" style="color:{NAVY};">admin</a>.</p>""",
     )
     text = (
         f"New order {order.number}\n\n{order.customer_name}\n{order.customer_phone}\n"

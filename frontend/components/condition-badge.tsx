@@ -22,7 +22,7 @@ export function ConditionBadge({
         aria-hidden
         className={cn(
           "inline-grid size-5 place-items-center rounded-[3px] font-display text-[13px] font-bold",
-          belgium ? "bg-graphite text-paper" : "border-[1.5px] border-graphite text-graphite",
+          belgium ? "bg-wine text-paper" : "border-[1.5px] border-navy text-navy",
         )}
       >
         {info.grade}

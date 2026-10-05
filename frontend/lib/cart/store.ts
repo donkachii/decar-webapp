@@ -3,15 +3,13 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-// Lines hold SKU and quantity only. Prices are always re-read from the
-// catalog (CLAUDE.md section 6), so a stale browser can never undercharge.
-export interface CartLine {
-  sku: string;
-  qty: number;
-}
+import type { SyncedCart } from "./sync";
+import type { CartLine } from "./types";
 
-interface CartState {
-  lines: CartLine[];
+export type { CartLine };
+
+// owner and unsaved belong to the account sync (./sync.ts).
+interface CartState extends SyncedCart {
   open: boolean;
   add: (sku: string, maxQty: number) => void;
   setQty: (sku: string, qty: number, maxQty: number) => void;
@@ -26,6 +24,8 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       lines: [],
+      owner: null,
+      unsaved: false,
       open: false,
       add: (sku, maxQty) =>
         set((state) => {
@@ -47,7 +47,7 @@ export const useCartStore = create<CartState>()(
       name: "dcr-cart",
       version: 1,
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ lines: state.lines }),
+      partialize: ({ lines, owner, unsaved }) => ({ lines, owner, unsaved }),
     },
   ),
 );

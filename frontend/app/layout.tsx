@@ -3,6 +3,7 @@ import { Barlow, Barlow_Condensed } from "next/font/google";
 import localFont from "next/font/local";
 
 import { CartDrawer } from "@/components/cart-drawer";
+import { CartSync } from "@/components/cart-sync";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { VehiclePickerSheet } from "@/components/vehicle-picker";
@@ -80,6 +81,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <SiteFooter />
         <VehiclePickerSheet vehicles={vehicles} selectedId={vehicle?.id ?? null} />
         <CartDrawer vehicleId={vehicle?.id ?? null} />
+        <CartSync userId={user?.id ?? null} />
       </body>
     </html>
   );

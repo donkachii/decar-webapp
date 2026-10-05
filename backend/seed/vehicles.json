@@ -1,5 +1,14 @@
 [
   {
+    "id": "toyota-camry-xv40-p",
+    "make": "toyota",
+    "model": "Camry",
+    "generation": "XV40",
+    "yearFrom": 2007,
+    "yearTo": 2009,
+    "facelift": false
+  },
+  {
     "id": "toyota-camry-xv50-p",
     "make": "toyota",
     "model": "Camry",
@@ -18,39 +27,93 @@
     "facelift": true
   },
   {
-    "id": "toyota-corolla-e170-f",
+    "id": "toyota-corolla-e130-f",
+    "make": "toyota",
+    "model": "Corolla",
+    "generation": "E130",
+    "yearFrom": 2005,
+    "yearTo": 2008,
+    "facelift": true
+  },
+  {
+    "id": "toyota-corolla-e140-p",
+    "make": "toyota",
+    "model": "Corolla",
+    "generation": "E140",
+    "yearFrom": 2009,
+    "yearTo": 2010,
+    "facelift": false
+  },
+  {
+    "id": "toyota-corolla-e170-p",
     "make": "toyota",
     "model": "Corolla",
     "generation": "E170",
-    "yearFrom": 2017,
-    "yearTo": 2019,
+    "yearFrom": 2014,
+    "yearTo": 2016,
+    "facelift": false
+  },
+  {
+    "id": "toyota-highlander-xu40-f",
+    "make": "toyota",
+    "model": "Highlander",
+    "generation": "XU40",
+    "yearFrom": 2011,
+    "yearTo": 2013,
     "facelift": true
   },
   {
-    "id": "toyota-highlander-xu50-f",
+    "id": "toyota-highlander-xu50-p",
     "make": "toyota",
     "model": "Highlander",
     "generation": "XU50",
-    "yearFrom": 2017,
-    "yearTo": 2019,
-    "facelift": true
+    "yearFrom": 2014,
+    "yearTo": 2016,
+    "facelift": false
   },
   {
-    "id": "toyota-sienna-xl30-f",
+    "id": "toyota-rav4-xa30-p",
     "make": "toyota",
-    "model": "Sienna",
-    "generation": "XL30",
-    "yearFrom": 2018,
-    "yearTo": 2020,
-    "facelift": true
+    "model": "RAV4",
+    "generation": "XA30",
+    "yearFrom": 2006,
+    "yearTo": 2008,
+    "facelift": false
   },
   {
-    "id": "toyota-rav4-xa40-f",
+    "id": "toyota-rav4-xa40-p",
     "make": "toyota",
     "model": "RAV4",
     "generation": "XA40",
-    "yearFrom": 2016,
-    "yearTo": 2018,
+    "yearFrom": 2013,
+    "yearTo": 2015,
+    "facelift": false
+  },
+  {
+    "id": "lexus-rx-xu30-p",
+    "make": "lexus",
+    "model": "RX",
+    "generation": "XU30",
+    "yearFrom": 2004,
+    "yearTo": 2006,
+    "facelift": false
+  },
+  {
+    "id": "lexus-rx-al10-p",
+    "make": "lexus",
+    "model": "RX",
+    "generation": "AL10",
+    "yearFrom": 2010,
+    "yearTo": 2012,
+    "facelift": false
+  },
+  {
+    "id": "lexus-rx-al10-f",
+    "make": "lexus",
+    "model": "RX",
+    "generation": "AL10",
+    "yearFrom": 2013,
+    "yearTo": 2015,
     "facelift": true
   },
   {
@@ -69,24 +132,6 @@
     "generation": "AL20",
     "yearFrom": 2020,
     "yearTo": 2022,
-    "facelift": true
-  },
-  {
-    "id": "lexus-es-xv60-f",
-    "make": "lexus",
-    "model": "ES",
-    "generation": "XV60",
-    "yearFrom": 2016,
-    "yearTo": 2018,
-    "facelift": true
-  },
-  {
-    "id": "lexus-gx-j150-f",
-    "make": "lexus",
-    "model": "GX",
-    "generation": "J150",
-    "yearFrom": 2014,
-    "yearTo": 2019,
     "facelift": true
   }
 ]

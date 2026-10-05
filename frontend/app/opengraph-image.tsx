@@ -1,14 +1,14 @@
 import { ImageResponse } from "next/og";
 
 import { SITE } from "@/lib/config/site";
-import { OG, ogFonts } from "@/lib/og";
+import { OG, ogFonts, ogLogoTile } from "@/lib/og";
 
 export const alt = "The right part for your Toyota or Lexus. First time.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export default async function Image() {
-  const fonts = await ogFonts();
+  const [fonts, logo] = await Promise.all([ogFonts(), ogLogoTile()]);
   return new ImageResponse(
     (
       <div
@@ -20,26 +20,12 @@ export default async function Image() {
           height: "100%",
           background: OG.bay,
           padding: 64,
-          color: OG.graphite,
+          color: OG.navy,
           fontFamily: "Barlow",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 16, fontFamily: "Barlow Condensed", fontSize: 36 }}>
-          <div
-            style={{
-              display: "flex",
-              width: 56,
-              height: 56,
-              borderRadius: 8,
-              background: OG.graphite,
-              color: OG.paper,
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 28,
-            }}
-          >
-            DC
-          </div>
+          <img src={logo} alt="" width={64} height={64} />
           {SITE.name}
         </div>
         <div style={{ display: "flex", fontFamily: "Barlow Condensed", fontSize: 112, lineHeight: 0.95, maxWidth: 1000 }}>

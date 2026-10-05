@@ -1,762 +1,493 @@
 [
   {
-    "sku": "DCR-TOY-CAM-XV50F-HL-FR-BA-U01",
-    "name": "Camry 2015–2017 headlight",
-    "category": "lights",
-    "type": "headlight",
-    "position": "front-right",
-    "condition": "belgium-a",
-    "variants": {
-      "lamp": "Halogen projector",
-      "drl": true,
-      "autoLevel": false
-    },
-    "priceNGN": 185000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-02T08:10:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/headlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-HL-FL-BB-U01",
-    "name": "Camry 2015–2017 headlight",
-    "category": "lights",
-    "type": "headlight",
-    "position": "front-left",
-    "condition": "belgium-b",
-    "defects": [
-      "Light surface scratches on the lens",
-      "Small scuff on the back of the housing"
-    ],
-    "variants": {
-      "lamp": "Halogen projector",
-      "drl": true,
-      "autoLevel": false
-    },
-    "priceNGN": 160000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-02T08:12:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/headlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50P-HL-FR-NA",
-    "name": "Camry 2012–2014 headlight",
-    "category": "lights",
-    "type": "headlight",
-    "position": "front-right",
-    "condition": "new-aftermarket",
-    "variants": {
-      "lamp": "Halogen",
-      "drl": false,
-      "autoLevel": false
-    },
-    "priceNGN": 78000,
-    "stockQty": 4,
-    "status": "available",
-    "stockCheckedAt": "2026-10-01T16:40:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/headlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-RX-AL20P-HL-FL-BA-U01",
-    "name": "Lexus RX 2016–2019 headlight",
-    "category": "lights",
-    "type": "headlight",
-    "position": "front-left",
-    "condition": "belgium-a",
-    "variants": {
-      "lamp": "LED",
-      "beams": "Triple-beam",
-      "drl": true,
-      "autoLevel": true
-    },
-    "priceNGN": 980000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-01T11:05:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/headlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-RX-AL20F-HL-FR-NG",
-    "name": "Lexus RX 2020–2022 headlight",
-    "category": "lights",
-    "type": "headlight",
-    "position": "front-right",
-    "condition": "new-genuine",
-    "variants": {
-      "lamp": "LED",
-      "beams": "Triple-beam",
-      "drl": true,
-      "autoLevel": true
-    },
-    "priceNGN": 1450000,
-    "stockQty": 2,
-    "status": "available",
-    "stockCheckedAt": "2026-09-30T14:20:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/headlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-HLN-XU50F-BL-OR-BA-U01",
-    "name": "Highlander 2017–2019 backlight",
-    "category": "lights",
-    "type": "backlight",
-    "position": "outer-right",
-    "condition": "belgium-a",
-    "variants": {
-      "lamp": "LED"
-    },
-    "priceNGN": 145000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-01T09:30:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/backlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-HLN-XU50F-BL-OL-BC-U01",
-    "name": "Highlander 2017–2019 backlight",
-    "category": "lights",
-    "type": "backlight",
-    "position": "outer-left",
-    "condition": "belgium-c",
-    "defects": [
-      "Crack on the lower lens corner, sealed and watertight",
-      "One bulb holder replaced"
-    ],
-    "variants": {
-      "lamp": "LED"
-    },
-    "priceNGN": 70000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-01T09:32:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/backlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-ES-XV60F-BL-IR-BA-U01",
-    "name": "Lexus ES 2016–2018 backlight",
-    "category": "lights",
-    "type": "backlight",
-    "position": "inner-right",
-    "condition": "belgium-a",
-    "variants": {
-      "lamp": "LED"
-    },
-    "priceNGN": 210000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-09-29T15:00:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/backlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-BL-OL-BA-U01",
-    "name": "Camry 2015–2017 backlight",
-    "category": "lights",
-    "type": "backlight",
-    "position": "outer-left",
-    "condition": "belgium-a",
-    "variants": {
-      "lamp": "LED"
-    },
-    "priceNGN": 95000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-02T08:20:00+01:00",
-    "shippingClass": "medium",
-    "images": [
-      "/parts/backlight.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-COR-E170F-FG-FL-NA",
-    "name": "Corolla 2017–2019 foglamp",
-    "category": "lights",
-    "type": "foglamp",
-    "position": "front-left",
-    "condition": "new-aftermarket",
-    "variants": {
-      "lamp": "Halogen"
-    },
-    "priceNGN": 28000,
-    "stockQty": 6,
-    "status": "available",
-    "stockCheckedAt": "2026-09-30T10:00:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/foglamp.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-RAV-XA40F-FG-FR-NG",
-    "name": "RAV4 2016–2018 foglamp",
-    "category": "lights",
-    "type": "foglamp",
-    "position": "front-right",
-    "condition": "new-genuine",
-    "variants": {
-      "lamp": "LED"
-    },
-    "priceNGN": 62000,
-    "stockQty": 3,
-    "status": "available",
-    "stockCheckedAt": "2026-09-30T10:05:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/foglamp.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-FB-F-BA-U01",
-    "name": "Camry 2015–2017 front bumper",
-    "category": "bumpers",
-    "type": "front-bumper",
-    "position": "front",
-    "condition": "belgium-a",
-    "variants": {
-      "fogLampHoles": true,
-      "parkingSensorHoles": false,
-      "headlampWasherHoles": false
-    },
-    "priceNGN": 220000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-02T07:55:00+01:00",
-    "shippingClass": "oversized",
-    "images": [
-      "/parts/front-bumper.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-FB-F-BB-U02",
-    "name": "Camry 2015–2017 front bumper",
-    "category": "bumpers",
-    "type": "front-bumper",
-    "position": "front",
-    "condition": "belgium-b",
-    "defects": [
-      "Two shallow scratches on the lower lip",
-      "Paint chip beside the number plate mount"
-    ],
-    "variants": {
-      "fogLampHoles": true,
-      "parkingSensorHoles": true,
-      "headlampWasherHoles": false
-    },
-    "priceNGN": 175000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-02T07:58:00+01:00",
-    "shippingClass": "oversized",
-    "images": [
-      "/parts/front-bumper.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-RX-AL20P-FB-F-NA",
-    "name": "Lexus RX 2016–2019 front bumper",
-    "category": "bumpers",
-    "type": "front-bumper",
+    "sku": "DCR-LEX-RX-AL10P-HD-F-NA",
+    "name": "Lexus RX 2010–2015 hood",
+    "category": "body",
+    "type": "hood",
     "position": "front",
     "condition": "new-aftermarket",
-    "variants": {
-      "fogLampHoles": true,
-      "parkingSensorHoles": true,
-      "headlampWasherHoles": true
-    },
-    "priceNGN": 340000,
-    "stockQty": 2,
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-29T12:30:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "oversized",
     "images": [
-      "/parts/front-bumper.svg"
+      "/parts/hood.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-HLN-XU50F-RB-R-BB-U01",
-    "name": "Highlander 2017–2019 back bumper",
-    "category": "bumpers",
-    "type": "back-bumper",
-    "position": "rear",
-    "condition": "belgium-b",
-    "defects": [
-      "Scuffs along the top step area",
-      "Faded paint on the lower edge"
-    ],
-    "variants": {
-      "parkingSensorHoles": true
-    },
-    "priceNGN": 260000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-01T09:40:00+01:00",
-    "shippingClass": "oversized",
-    "images": [
-      "/parts/back-bumper.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-SIE-XL30F-RB-R-BA-U01",
-    "name": "Sienna 2018–2020 back bumper",
-    "category": "bumpers",
-    "type": "back-bumper",
-    "position": "rear",
-    "condition": "belgium-a",
-    "variants": {
-      "parkingSensorHoles": true
-    },
-    "priceNGN": 240000,
-    "stockQty": 1,
-    "status": "reserved",
-    "stockCheckedAt": "2026-10-01T13:15:00+01:00",
-    "shippingClass": "oversized",
-    "images": [
-      "/parts/back-bumper.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-RB-R-NA",
-    "name": "Camry 2015–2017 back bumper",
-    "category": "bumpers",
-    "type": "back-bumper",
-    "position": "rear",
+    "sku": "DCR-LEX-RX-AL20P-HD-F-NA",
+    "name": "Lexus RX 2016–2022 hood",
+    "category": "body",
+    "type": "hood",
+    "position": "front",
     "condition": "new-aftermarket",
-    "variants": {
-      "parkingSensorHoles": false
-    },
-    "priceNGN": 115000,
-    "stockQty": 2,
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-30T17:10:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "oversized",
     "images": [
-      "/parts/back-bumper.svg"
+      "/parts/hood.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-CAM-XV50F-FC-FL-NA",
-    "name": "Camry 2015–2017 foglamp cover",
-    "category": "bumpers",
-    "type": "foglamp-cover",
-    "position": "front-left",
-    "condition": "new-aftermarket",
-    "variants": {
-      "fogLampHole": true,
-      "chromeTrim": false
-    },
-    "priceNGN": 15000,
-    "stockQty": 8,
-    "status": "available",
-    "stockCheckedAt": "2026-09-30T17:15:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/foglamp-cover.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-FC-FR-NA",
-    "name": "Camry 2015–2017 foglamp cover",
-    "category": "bumpers",
-    "type": "foglamp-cover",
-    "position": "front-right",
-    "condition": "new-aftermarket",
-    "variants": {
-      "fogLampHole": true,
-      "chromeTrim": false
-    },
-    "priceNGN": 15000,
-    "stockQty": 7,
-    "status": "available",
-    "stockCheckedAt": "2026-09-30T17:15:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/foglamp-cover.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-RX-AL20P-FC-FL-BA-U01",
-    "name": "Lexus RX 2016–2019 foglamp cover",
-    "category": "bumpers",
-    "type": "foglamp-cover",
-    "position": "front-left",
-    "condition": "belgium-a",
-    "variants": {
-      "fogLampHole": true,
-      "chromeTrim": true
-    },
-    "priceNGN": 45000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-09-29T12:35:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/foglamp-cover.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-HD-F-BA-U01",
+    "sku": "DCR-TOY-CAM-XV50F-HD-F-NA",
     "name": "Camry 2015–2017 hood",
     "category": "body",
     "type": "hood",
     "position": "front",
-    "condition": "belgium-a",
-    "variants": {
-      "insulation": true
-    },
-    "priceNGN": 210000,
-    "stockQty": 1,
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-10-02T08:00:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "oversized",
     "images": [
       "/parts/hood.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-COR-E170F-HD-F-BC-U01",
-    "name": "Corolla 2017–2019 hood",
+    "sku": "DCR-TOY-COR-E170P-HD-F-NA",
+    "name": "Corolla 2014–2016 hood",
     "category": "body",
     "type": "hood",
     "position": "front",
-    "condition": "belgium-c",
-    "defects": [
-      "Dent near the front edge, pulled and filled",
-      "Primer patch on the left corner"
-    ],
-    "variants": {
-      "insulation": false
-    },
-    "priceNGN": 95000,
-    "stockQty": 1,
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-28T15:45:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "oversized",
     "images": [
       "/parts/hood.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-RAV-XA40F-FD-FL-BA-U01",
-    "name": "RAV4 2016–2018 fender",
+    "sku": "DCR-TOY-HLN-XU40F-HD-F-NA",
+    "name": "Highlander 2011–2013 hood",
+    "category": "body",
+    "type": "hood",
+    "position": "front",
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "oversized",
+    "images": [
+      "/parts/hood.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-HLN-XU50P-HD-F-NA",
+    "name": "Highlander 2014–2016 hood",
+    "category": "body",
+    "type": "hood",
+    "position": "front",
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "oversized",
+    "images": [
+      "/parts/hood.svg"
+    ]
+  },
+  {
+    "sku": "DCR-LEX-RX-AL10P-FD-FL-NA",
+    "name": "Lexus RX 2010–2015 fender",
     "category": "body",
     "type": "fender",
     "position": "front-left",
-    "condition": "belgium-a",
-    "variants": {},
-    "priceNGN": 110000,
-    "stockQty": 1,
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicatorHole": false
+    },
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-30T11:20:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "bulky",
     "images": [
       "/parts/fender.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-RAV-XA40F-FD-FR-NA",
-    "name": "RAV4 2016–2018 fender",
+    "sku": "DCR-LEX-RX-AL10P-FD-FR-NA",
+    "name": "Lexus RX 2010–2015 fender",
     "category": "body",
     "type": "fender",
     "position": "front-right",
     "condition": "new-aftermarket",
-    "variants": {},
-    "priceNGN": 65000,
-    "stockQty": 3,
+    "variants": {
+      "indicatorHole": false
+    },
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-30T11:25:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "bulky",
     "images": [
       "/parts/fender.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-HLN-XU50F-DR-FL-BA-U01",
-    "name": "Highlander 2017–2019 door",
+    "sku": "DCR-LEX-RX-AL20P-FD-FL-NA",
+    "name": "Lexus RX 2016–2022 fender",
     "category": "body",
-    "type": "door",
+    "type": "fender",
     "position": "front-left",
-    "condition": "belgium-a",
+    "condition": "new-aftermarket",
     "variants": {
-      "glass": true,
-      "regulator": true,
-      "trim": false
+      "indicatorHole": false
     },
-    "priceNGN": 320000,
-    "stockQty": 1,
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-10-01T09:50:00+01:00",
-    "shippingClass": "oversized",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
     "images": [
-      "/parts/door.svg"
+      "/parts/fender.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-HLN-XU50F-DR-RR-BB-U01",
-    "name": "Highlander 2017–2019 door",
+    "sku": "DCR-LEX-RX-AL20P-FD-FR-NA",
+    "name": "Lexus RX 2016–2022 fender",
     "category": "body",
-    "type": "door",
-    "position": "rear-right",
-    "condition": "belgium-b",
-    "defects": [
-      "Light dent below the handle",
-      "Scratches on the lower edge"
-    ],
-    "variants": {
-      "glass": true,
-      "regulator": false,
-      "trim": false
-    },
-    "priceNGN": 255000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-01T09:55:00+01:00",
-    "shippingClass": "oversized",
-    "images": [
-      "/parts/door.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-SIE-XL30F-DR-FR-BA-U01",
-    "name": "Sienna 2018–2020 door",
-    "category": "body",
-    "type": "door",
+    "type": "fender",
     "position": "front-right",
-    "condition": "belgium-a",
+    "condition": "new-aftermarket",
     "variants": {
-      "glass": true,
-      "regulator": true,
-      "trim": true
+      "indicatorHole": false
     },
-    "priceNGN": 290000,
-    "stockQty": 0,
-    "status": "sold",
-    "stockCheckedAt": "2026-09-27T10:00:00+01:00",
-    "shippingClass": "oversized",
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
     "images": [
-      "/parts/door.svg"
+      "/parts/fender.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-CAM-XV50F-DR-FL-BC-U01",
-    "name": "Camry 2012–2017 door",
+    "sku": "DCR-TOY-CAM-XV50F-FD-FL-NA",
+    "name": "Camry 2015–2017 fender",
     "category": "body",
-    "type": "door",
+    "type": "fender",
     "position": "front-left",
-    "condition": "belgium-c",
-    "defects": [
-      "Repaired dent on the lower panel, resprayed",
-      "Paint shade slightly lighter than factory"
-    ],
-    "variants": {
-      "glass": false,
-      "regulator": false,
-      "trim": false
-    },
-    "priceNGN": 140000,
-    "stockQty": 1,
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-10-02T08:05:00+01:00",
-    "shippingClass": "oversized",
-    "images": [
-      "/parts/door.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-RX-AL20F-GR-F-BA-U01",
-    "name": "Lexus RX 2020–2022 front grill",
-    "category": "body",
-    "type": "front-grill",
-    "position": "front",
-    "condition": "belgium-a",
-    "variants": {
-      "finish": "Black mesh",
-      "cameraMount": true
-    },
-    "priceNGN": 380000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-09-30T14:25:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "bulky",
     "images": [
-      "/parts/front-grill.svg"
+      "/parts/fender.svg"
     ]
   },
   {
-    "sku": "DCR-TOY-CAM-XV50F-GR-F-NG",
-    "name": "Camry 2015–2017 front grill",
+    "sku": "DCR-TOY-CAM-XV50F-FD-FR-NA",
+    "name": "Camry 2015–2017 fender",
     "category": "body",
-    "type": "front-grill",
-    "position": "front",
-    "condition": "new-genuine",
-    "variants": {
-      "finish": "Chrome bars",
-      "cameraMount": false
-    },
-    "priceNGN": 85000,
-    "stockQty": 2,
+    "type": "fender",
+    "position": "front-right",
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-30T17:20:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "bulky",
     "images": [
-      "/parts/front-grill.svg"
+      "/parts/fender.svg"
     ]
   },
   {
-    "sku": "DCR-LEX-GX-J150F-GR-F-NA",
-    "name": "Lexus GX 2014–2019 front grill",
+    "sku": "DCR-TOY-COR-E170P-FD-FL-NA",
+    "name": "Corolla 2014–2016 fender",
+    "category": "body",
+    "type": "fender",
+    "position": "front-left",
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
+    "images": [
+      "/parts/fender.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-COR-E170P-FD-FR-NA",
+    "name": "Corolla 2014–2016 fender",
+    "category": "body",
+    "type": "fender",
+    "position": "front-right",
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
+    "images": [
+      "/parts/fender.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-HLN-XU40F-FD-FL-NA",
+    "name": "Highlander 2011–2013 fender",
+    "category": "body",
+    "type": "fender",
+    "position": "front-left",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicatorHole": false
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
+    "images": [
+      "/parts/fender.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-HLN-XU40F-FD-FR-NA",
+    "name": "Highlander 2011–2013 fender",
+    "category": "body",
+    "type": "fender",
+    "position": "front-right",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicatorHole": false
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
+    "images": [
+      "/parts/fender.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-HLN-XU50P-FD-FL-NA",
+    "name": "Highlander 2014–2016 fender",
+    "category": "body",
+    "type": "fender",
+    "position": "front-left",
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
+    "images": [
+      "/parts/fender.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-HLN-XU50P-FD-FR-NA",
+    "name": "Highlander 2014–2016 fender",
+    "category": "body",
+    "type": "fender",
+    "position": "front-right",
+    "condition": "new-aftermarket",
+    "variants": {},
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "bulky",
+    "images": [
+      "/parts/fender.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-CAM-XV40P-MR-LH-NA",
+    "name": "Camry 2007–2009 side mirror",
+    "category": "mirrors",
+    "type": "mirror",
+    "position": "left",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicator": true
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "small",
+    "images": [
+      "/parts/mirror.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-CAM-XV40P-MR-RH-NA",
+    "name": "Camry 2007–2009 side mirror",
+    "category": "mirrors",
+    "type": "mirror",
+    "position": "right",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicator": true
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "small",
+    "images": [
+      "/parts/mirror.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-CAM-XV50P-MR-RH-NA",
+    "name": "Camry 2012–2014 side mirror",
+    "category": "mirrors",
+    "type": "mirror",
+    "position": "right",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicator": true
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "small",
+    "images": [
+      "/parts/mirror.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-COR-E140P-MR-RH-NA",
+    "name": "Corolla 2009–2010 side mirror",
+    "category": "mirrors",
+    "type": "mirror",
+    "position": "right",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicator": true
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "small",
+    "images": [
+      "/parts/mirror.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-COR-E130F-MR-LH-NA",
+    "name": "Corolla 2005–2008 side mirror",
+    "category": "mirrors",
+    "type": "mirror",
+    "position": "left",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicator": true
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "small",
+    "images": [
+      "/parts/mirror.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-RAV-XA40P-MR-LH-NA",
+    "name": "RAV4 2013–2015 side mirror",
+    "category": "mirrors",
+    "type": "mirror",
+    "position": "left",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicator": true,
+      "connector": "5-pin"
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "small",
+    "images": [
+      "/parts/mirror.svg"
+    ]
+  },
+  {
+    "sku": "DCR-TOY-RAV-XA30P-MR-RH-NA",
+    "name": "RAV4 2006–2008 side mirror",
+    "category": "mirrors",
+    "type": "mirror",
+    "position": "right",
+    "condition": "new-aftermarket",
+    "variants": {
+      "indicator": true,
+      "connector": "5-pin"
+    },
+    "priceNGN": null,
+    "stockQty": null,
+    "status": "available",
+    "stockCheckedAt": null,
+    "shippingClass": "small",
+    "images": [
+      "/parts/mirror.svg"
+    ]
+  },
+  {
+    "sku": "DCR-LEX-RX-XU30P-GR-F-NA",
+    "name": "Lexus RX 2004–2006 front grill",
     "category": "body",
     "type": "front-grill",
     "position": "front",
     "condition": "new-aftermarket",
     "variants": {
-      "finish": "Chrome spindle",
-      "cameraMount": false
+      "finish": "Chrome bars"
     },
-    "priceNGN": 145000,
-    "stockQty": 2,
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-28T13:00:00+01:00",
+    "stockCheckedAt": null,
     "shippingClass": "bulky",
     "images": [
       "/parts/front-grill.svg"
     ]
   },
   {
-    "sku": "DCR-LEX-RX-AL20P-MR-LH-BA-U01",
-    "name": "Lexus RX 2016–2019 side mirror",
-    "category": "mirrors",
-    "type": "mirror",
-    "position": "left",
-    "condition": "belgium-a",
-    "variants": {
-      "powerFold": true,
-      "heated": true,
-      "indicator": true,
-      "camera": true,
-      "blindSpot": true
-    },
-    "priceNGN": 250000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-01T11:10:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/mirror.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-CAM-XV50F-MR-RH-BB-U01",
-    "name": "Camry 2012–2017 side mirror",
-    "category": "mirrors",
-    "type": "mirror",
-    "position": "right",
-    "condition": "belgium-b",
-    "defects": [
-      "Scratches on the mirror cover",
-      "Indicator lens slightly cloudy"
-    ],
-    "variants": {
-      "powerFold": false,
-      "heated": false,
-      "indicator": true,
-      "camera": false
-    },
-    "priceNGN": 85000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-10-02T08:25:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/mirror.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-ES-XV60F-MR-LH-NA",
-    "name": "Lexus ES 2016–2018 side mirror",
-    "category": "mirrors",
-    "type": "mirror",
-    "position": "left",
+    "sku": "DCR-TOY-CAM-XV40P-GR-F-NA",
+    "name": "Camry 2007–2009 lower grill",
+    "category": "body",
+    "type": "front-grill",
+    "position": "front",
     "condition": "new-aftermarket",
     "variants": {
-      "powerFold": true,
-      "heated": true,
-      "indicator": true,
-      "camera": false
+      "section": "Lower"
     },
-    "priceNGN": 120000,
-    "stockQty": 2,
+    "priceNGN": null,
+    "stockQty": null,
     "status": "available",
-    "stockCheckedAt": "2026-09-29T15:10:00+01:00",
-    "shippingClass": "small",
+    "stockCheckedAt": null,
+    "shippingClass": "medium",
     "images": [
-      "/parts/mirror.svg"
-    ]
-  },
-  {
-    "sku": "DCR-TOY-RAV-XA40F-MR-RH-BA-U01",
-    "name": "RAV4 2016–2018 side mirror",
-    "category": "mirrors",
-    "type": "mirror",
-    "position": "right",
-    "condition": "belgium-a",
-    "variants": {
-      "powerFold": true,
-      "heated": true,
-      "indicator": true,
-      "camera": false
-    },
-    "priceNGN": 95000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-09-30T11:30:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/mirror.svg"
-    ]
-  },
-  {
-    "sku": "DCR-LEX-GX-J150F-MR-LH-BA-U01",
-    "name": "Lexus GX 2014–2019 side mirror",
-    "category": "mirrors",
-    "type": "mirror",
-    "position": "left",
-    "condition": "belgium-a",
-    "variants": {
-      "powerFold": true,
-      "heated": true,
-      "indicator": true,
-      "camera": true
-    },
-    "priceNGN": 190000,
-    "stockQty": 1,
-    "status": "available",
-    "stockCheckedAt": "2026-09-28T13:05:00+01:00",
-    "shippingClass": "small",
-    "images": [
-      "/parts/mirror.svg"
+      "/parts/front-grill.svg"
     ]
   }
 ]

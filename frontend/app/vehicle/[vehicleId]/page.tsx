@@ -34,7 +34,7 @@ export default async function VehiclePage({ params }: PageProps<"/vehicle/[vehic
         {vehicleGenerationLabel(vehicle)}. {parts.length} {parts.length === 1 ? "part" : "parts"} confirmed to fit.
       </p>
       {isMine ? (
-        <p className="mt-4 inline-flex rounded-md bg-amber px-3 py-2 font-semibold">This is your car</p>
+        <p className="mt-4 inline-flex rounded-md bg-tan px-3 py-2 font-semibold">This is your car</p>
       ) : (
         <form action={choose} className="mt-4">
           <Button type="submit">Make this my car</Button>

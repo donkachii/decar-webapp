@@ -79,7 +79,7 @@ export function DamageSelector({
                 <span
                   className={cn(
                     "absolute inset-[3px] rounded-md border border-dashed transition-colors duration-150",
-                    selected ? "border-amber bg-amber" : "border-primer hover:bg-bay",
+                    selected ? "border-tan bg-tan" : "border-primer hover:bg-bay",
                   )}
                   aria-hidden
                 />
@@ -193,7 +193,7 @@ function EmptyZone({ zone, vehicleLabel }: { zone: Zone; vehicleLabel: string | 
         href={whatsappLink(message)}
         target="_blank"
         rel="noreferrer"
-        className="mt-4 inline-flex h-11 items-center gap-2 rounded-md border border-graphite bg-paper px-4 font-semibold hover:bg-bay"
+        className="mt-4 inline-flex h-11 items-center gap-2 rounded-md border border-navy bg-paper px-4 font-semibold hover:bg-bay"
       >
         <MessageCircle aria-hidden className="size-[18px]" />
         Ask on WhatsApp

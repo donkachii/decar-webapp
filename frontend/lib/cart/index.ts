@@ -4,11 +4,62 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 
 import type { CartDetailsResponse, CartPartView } from "./types";
 import { useCartStore, type CartLine } from "./store";
+import { startCartSync, type CartSync, type SavedCartApi } from "./sync";
 
-// Public cart API for components. Backed by a persisted client store today;
-// moving to a server cart later only changes this folder.
+// Public cart API for components. Backed by a persisted client store, saved
+// to the buyer's account while they are signed in (./sync.ts).
 
 export type { CartLine, CartPartView };
+
+async function savedCart(method: "GET" | "PUT" | "POST", lines?: CartLine[]): Promise<CartLine[] | null> {
+  const res = await fetch("/api/cart/saved", {
+    method,
+    headers: lines ? { "content-type": "application/json" } : undefined,
+    body: lines ? JSON.stringify({ lines }) : undefined,
+    cache: "no-store",
+    // A change made just before the tab closes still reaches the account.
+    keepalive: method === "PUT",
+  });
+  if (res.status === 401) return null;
+  if (!res.ok) throw new Error(`Saved cart ${method} responded ${res.status}`);
+  return ((await res.json()) as { lines: CartLine[] }).lines;
+}
+
+const savedCartApi: SavedCartApi = {
+  load: () => savedCart("GET"),
+  save: (lines) => savedCart("PUT", lines),
+  merge: (lines) => savedCart("POST", lines),
+};
+
+let sync: CartSync | undefined;
+
+function cartSync(): CartSync {
+  sync ??= startCartSync(useCartStore, savedCartApi);
+  return sync;
+}
+
+/** Re-reads the cart saved to the buyer's account. Does nothing for guests. */
+export function refreshSavedCart(): Promise<void> {
+  return sync?.refresh() ?? Promise.resolve();
+}
+
+/**
+ * Keeps a signed-in buyer's cart the same here and in the phone app. Mount
+ * once, with the signed-in account's id (null for guests).
+ */
+export function useCartSync(userId: string | null): void {
+  useEffect(() => {
+    cartSync().setUser(userId);
+  }, [userId]);
+
+  useEffect(() => {
+    const onShow = () => {
+      if (document.visibilityState === "visible") void refreshSavedCart();
+    };
+    document.addEventListener("visibilitychange", onShow);
+    return () => document.removeEventListener("visibilitychange", onShow);
+  }, []);
+}
 
 export function useCartLines(): CartLine[] {
   return useCartStore((s) => s.lines);

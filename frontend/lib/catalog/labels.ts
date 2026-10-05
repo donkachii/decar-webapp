@@ -97,6 +97,9 @@ const VARIANT_LABELS: Record<string, string> = {
   finish: "Finish",
   cameraMount: "Front camera mount",
   insulation: "Insulation pad",
+  indicatorHole: "Indicator lamp hole",
+  connector: "Plug",
+  section: "Grill section",
 };
 
 export function variantLabel(key: string): string {

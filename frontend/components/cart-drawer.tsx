@@ -2,6 +2,7 @@
 
 import { Car, MessageCircle, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { useEffect } from "react";
 
 import {
   CartLineList,
@@ -18,7 +19,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useOpenVehiclePicker } from "@/components/vehicle-picker";
-import { useCartCount, useCartDetails, useCartOpen, useHydrated } from "@/lib/cart";
+import { refreshSavedCart, useCartCount, useCartDetails, useCartOpen, useHydrated } from "@/lib/cart";
 import { formatNGN } from "@/lib/format";
 
 /** Slide-in cart. Opens on "Add to cart"; never navigates on its own. */
@@ -30,12 +31,17 @@ export function CartDrawer({ vehicleId }: { vehicleId: string | null }) {
   const summary = summariseCart(lines, parts);
   const close = () => setOpen(false);
 
+  // Lines added on the phone since this page loaded.
+  useEffect(() => {
+    if (open) void refreshSavedCart();
+  }, [open]);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetContent side="right" className="gap-0">
         <SheetHeader className="border-b border-bay px-4 pt-5 pb-4">
           <SheetTitle>Your cart</SheetTitle>
-          <SheetDescription className="text-[15px] text-graphite">
+          <SheetDescription className="text-[15px] text-navy">
             {count === 0 ? "Nothing in it yet." : `${count} ${count === 1 ? "part" : "parts"}`}
           </SheetDescription>
         </SheetHeader>
@@ -55,7 +61,7 @@ export function CartDrawer({ vehicleId }: { vehicleId: string | null }) {
           ) : (
             <>
               {!vehicle && !loading ? (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-md border border-dashed border-graphite px-3 py-2.5">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-md border border-dashed border-navy px-3 py-2.5">
                   <p className="text-sm">Choose your car and we&apos;ll check every part fits.</p>
                   <Button
                     size="sm"
@@ -154,7 +160,7 @@ function CartButtonView({ count, onClick }: { count: number; onClick: () => void
       {shown > 0 ? (
         <span
           aria-hidden
-          className="absolute top-1 right-0.5 grid min-w-5 place-items-center rounded-full bg-amber px-1 text-xs leading-5 font-bold tabular"
+          className="absolute top-1 right-0.5 grid min-w-5 place-items-center rounded-full bg-tan px-1 text-xs leading-5 font-bold tabular"
         >
           {shown}
         </span>

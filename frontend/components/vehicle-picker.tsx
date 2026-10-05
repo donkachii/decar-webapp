@@ -65,7 +65,7 @@ export function VehiclePickerSheet({
       <SheetContent side="right" className="gap-0 overflow-y-auto">
         <SheetHeader className="border-b border-bay px-4 pt-5 pb-4">
           <SheetTitle>Choose your car</SheetTitle>
-          <SheetDescription className="max-w-[34ch] text-[15px] text-graphite">
+          <SheetDescription className="max-w-[34ch] text-[15px] text-navy">
             We only show parts confirmed to fit it. Facelift and pre-facelift parts are different,
             so pick the years on your vehicle papers.
           </SheetDescription>
@@ -111,8 +111,8 @@ export function VehiclePickerSheet({
                           className={cn(
                             "flex w-full items-center justify-between gap-3 rounded-md border px-3 py-2.5 text-left transition-colors disabled:opacity-60",
                             isSelected
-                              ? "border-amber bg-amber"
-                              : "border-primer bg-paper hover:border-graphite",
+                              ? "border-tan bg-tan"
+                              : "border-primer bg-paper hover:border-navy",
                           )}
                         >
                           <span>
@@ -149,7 +149,7 @@ export function VehiclePickerSheet({
   );
 }
 
-/** Header chip. Amber when a car is selected; a dashed empty slot when not. */
+/** Header chip. Tan when a car is selected; a dashed empty slot when not. */
 export function VehicleChip({ label, className }: { label: string | null; className?: string }) {
   const openPicker = useOpenVehiclePicker();
   return (
@@ -159,8 +159,8 @@ export function VehicleChip({ label, className }: { label: string | null; classN
       className={cn(
         "inline-flex h-11 min-w-0 items-center gap-2 rounded-md px-3 text-left text-[15px] font-semibold transition-colors",
         label
-          ? "bg-amber text-graphite hover:shadow-[inset_0_0_0_2px_var(--color-graphite)]"
-          : "border-[1.5px] border-dashed border-graphite hover:bg-paper",
+          ? "bg-tan text-navy hover:shadow-[inset_0_0_0_2px_var(--color-navy)]"
+          : "border-[1.5px] border-dashed border-navy hover:bg-paper",
         className,
       )}
     >

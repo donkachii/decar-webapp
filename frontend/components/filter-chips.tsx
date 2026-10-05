@@ -2,7 +2,7 @@ import { cn } from "cn";
 import { Check } from "lucide-react";
 import Link from "next/link";
 
-/** A row of link chips. Active chips are amber (CLAUDE.md: active filters). */
+/** A row of link chips. Active chips are tan (CLAUDE.md: active filters). */
 export function FilterChips({
   label,
   options,
@@ -23,8 +23,8 @@ export function FilterChips({
               className={cn(
                 "inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap transition-colors",
                 o.active
-                  ? "border-amber bg-amber font-semibold"
-                  : "border-primer bg-paper hover:border-graphite",
+                  ? "border-tan bg-tan font-semibold"
+                  : "border-primer bg-paper hover:border-navy",
               )}
             >
               {o.active ? <Check aria-hidden className="size-3.5" /> : null}
