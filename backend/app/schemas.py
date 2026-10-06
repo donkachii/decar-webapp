@@ -194,6 +194,25 @@ class GoogleIdTokenIn(ApiModel):
     id_token: str = Field(max_length=4096)
 
 
+# PKCE (RFC 7636): the app's verifier and its S256 challenge.
+PKCE_CHALLENGE = r"^[A-Za-z0-9_-]{43}$"
+PKCE_VERIFIER = r"^[A-Za-z0-9._~-]{43,128}$"
+
+
+class GoogleAppCodeIn(ApiModel):
+    code: str = Field(max_length=2000)  # Google's one-time code
+    challenge: str = Field(pattern=PKCE_CHALLENGE)
+
+
+class AppCodeOut(ApiModel):
+    code: str
+
+
+class AppSessionIn(ApiModel):
+    code: str = Field(max_length=2000)
+    verifier: str = Field(pattern=PKCE_VERIFIER)
+
+
 class SessionOut(ApiModel):
     token: str
     user: UserOut

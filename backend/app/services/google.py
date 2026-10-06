@@ -6,6 +6,8 @@ here. Only the API holds the client secret.
 
 Phone app: Google signs the buyer in on the phone and gives the app an ID
 token, which verify_id_token() checks against the configured client IDs.
+Builds without native sign-in use the website's flow in an in-app browser
+instead and get a one-time app code back (app.auth, /auth/google/app-code).
 """
 
 from dataclasses import dataclass

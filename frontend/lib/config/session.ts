@@ -17,12 +17,31 @@ export function oauthCookieOptions() {
   return { httpOnly: true, secure, sameSite: "lax" as const, path: "/auth", maxAge: 60 * 10 };
 }
 
-export function readOauthCookie(value: string | undefined): { state: string; next: string } | null {
+/**
+ * A phone-app sign-in in the browser (app/auth/app): where to hand the app its
+ * one-time code (checked by the API) and the PKCE challenge it is bound to.
+ */
+export interface AppSignIn {
+  returnUrl: string;
+  challenge: string;
+}
+
+export interface OauthCookie {
+  state: string;
+  next: string;
+  app?: AppSignIn;
+}
+
+export function readOauthCookie(value: string | undefined): OauthCookie | null {
   if (!value) return null;
   try {
-    const parsed = JSON.parse(value) as { state?: unknown; next?: unknown };
+    const parsed = JSON.parse(value) as { state?: unknown; next?: unknown; app?: { returnUrl?: unknown; challenge?: unknown } };
     if (typeof parsed.state !== "string" || typeof parsed.next !== "string") return null;
     const next = parsed.next.startsWith("/") && !parsed.next.startsWith("//") ? parsed.next : "/account";
+    const app = parsed.app;
+    if (app && typeof app.returnUrl === "string" && typeof app.challenge === "string") {
+      return { state: parsed.state, next, app: { returnUrl: app.returnUrl, challenge: app.challenge } };
+    }
     return { state: parsed.state, next };
   } catch {
     return null;

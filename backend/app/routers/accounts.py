@@ -5,12 +5,23 @@ from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import SettingsDep, SignedInUser, create_session_token, is_admin
+from app.auth import (
+    SettingsDep,
+    SignedInUser,
+    app_return_allowed,
+    create_app_code,
+    create_session_token,
+    is_admin,
+    redeem_app_code,
+)
 from app.config import Settings
 from app.db import SessionDep
 from app.models import Order, User
 from app.schemas import (
+    AppCodeOut,
+    AppSessionIn,
     CartLineOut,
+    GoogleAppCodeIn,
     GoogleExchangeIn,
     GoogleIdTokenIn,
     GoogleUrlOut,
@@ -31,12 +42,20 @@ def _require_google(settings: SettingsDep) -> None:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Google sign-in isn't set up.")
 
 
-@router.get("/auth/google/url")
+@router.get("/auth/google/url", responses={400: {"description": "appReturn is not the app"}})
 async def google_url(
-    settings: SettingsDep, state: Annotated[str, Query(min_length=16, max_length=200)]
+    settings: SettingsDep,
+    state: Annotated[str, Query(min_length=16, max_length=200)],
+    app_return: Annotated[str | None, Query(alias="appReturn", max_length=500)] = None,
 ) -> GoogleUrlOut:
-    """Where to send the buyer. The frontend keeps `state` in a cookie and checks it on return."""
+    """Where to send the buyer. The frontend keeps `state` in a cookie and checks it on return.
+
+    `appReturn` marks a phone-app sign-in in the browser: the address the website
+    will hand the app's one-time code to, checked here before the buyer leaves.
+    """
     _require_google(settings)
+    if app_return is not None and not app_return_allowed(settings, app_return):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "That address can't receive a sign-in.")
     return GoogleUrlOut(url=google.authorization_url(settings, state))
 
 
@@ -62,8 +81,50 @@ async def google_id_token(body: GoogleIdTokenIn, session: SessionDep, settings: 
     return await _sign_in(session, settings, identity)
 
 
+@router.post("/auth/google/app-code", responses={400: {"description": "Google rejected the sign-in"}})
+async def google_app_code(body: GoogleAppCodeIn, session: SessionDep, settings: SettingsDep) -> AppCodeOut:
+    """The website's callback for a phone-app sign-in in the browser.
+
+    Trades Google's code like /auth/google/exchange, but returns a one-time code
+    for the app instead of the session token: it travels in a URL, so it is only
+    worth anything with the verifier the app kept.
+    """
+    _require_google(settings)
+    try:
+        identity = await google.exchange_code(settings, body.code)
+    except google.GoogleSignInError as error:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Google sign-in didn't finish.") from error
+    user, created = await _save_account(session, identity)
+    return AppCodeOut(code=create_app_code(settings, user.id, body.challenge, created))
+
+
+@router.post("/auth/google/app-session", responses={400: {"description": "Invalid or expired code"}})
+async def google_app_session(body: AppSessionIn, session: SessionDep, settings: SettingsDep) -> SessionOut:
+    """The phone app trades its one-time code and verifier for an API session token."""
+    _require_google(settings)
+    redeemed = redeem_app_code(settings, body.code, body.verifier)
+    user = await session.get(User, redeemed[0]) if redeemed else None
+    if redeemed is None or user is None:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Google sign-in didn't finish.")
+    return _session_out(settings, user, created=redeemed[1])
+
+
 async def _sign_in(session: AsyncSession, settings: Settings, identity: google.GoogleIdentity) -> SessionOut:
     """Creates or refreshes the account by Google subject and issues an API session token."""
+    user, created = await _save_account(session, identity)
+    return _session_out(settings, user, created)
+
+
+def _session_out(settings: Settings, user: User, created: bool) -> SessionOut:
+    return SessionOut(
+        token=create_session_token(settings, user.id),
+        user=UserOut.model_validate(user),
+        created=created,
+    )
+
+
+async def _save_account(session: AsyncSession, identity: google.GoogleIdentity) -> tuple[User, bool]:
+    """Creates or refreshes the account by Google subject. True when this made it."""
     existing = await session.scalar(select(User.id).where(User.google_sub == identity.sub))
     user = await session.scalar(
         insert(User)
@@ -77,11 +138,7 @@ async def _sign_in(session: AsyncSession, settings: Settings, identity: google.G
     await session.commit()
     if user is None:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Could not save the account.")
-    return SessionOut(
-        token=create_session_token(settings, user.id),
-        user=UserOut.model_validate(user),
-        created=existing is None,
-    )
+    return user, existing is None
 
 
 @router.get("/me", responses={401: {"description": "Not signed in"}})

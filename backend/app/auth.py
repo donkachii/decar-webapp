@@ -6,9 +6,13 @@ Buyers never need one to check out; the owner needs one, with an email in
 ADMIN_EMAILS, for every /admin route.
 """
 
+import base64
+import hashlib
+import hmac
 import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
+from urllib.parse import urlsplit
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -43,6 +47,64 @@ def read_session_token(settings: Settings, token: str) -> uuid.UUID | None:
         return uuid.UUID(str(claims["sub"]))
     except (jwt.PyJWTError, ValueError):
         return None
+
+
+# --- Phone-app sign-in through the browser ---------------------------------
+#
+# Builds without native Google sign-in (Expo Go, iOS without an iOS OAuth
+# client) sign in on the website in an in-app browser. The website's callback
+# sends the app a short-lived code rather than the session token, and only the
+# app can redeem it: the code is bound to the PKCE challenge of a verifier the
+# app never sends through the browser.
+
+APP_SCHEME = "decar"  # mobile/app.config.ts
+APP_CODE_AUDIENCE = "dcr-app-sign-in"  # session tokens carry no audience, so neither passes as the other
+APP_CODE_MINUTES = 5
+
+
+def app_return_allowed(settings: Settings, url: str) -> bool:
+    """Where a browser sign-in may hand its code: the app, plus Expo Go (exp://) outside production."""
+    schemes = {APP_SCHEME} if settings.app_env == "production" else {APP_SCHEME, "exp", "exps"}
+    return urlsplit(url).scheme.lower() in schemes
+
+
+def pkce_challenge(verifier: str) -> str:
+    """S256: unpadded base64url of the verifier's SHA-256."""
+    digest = hashlib.sha256(verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
+def create_app_code(settings: Settings, user_id: uuid.UUID, challenge: str, created: bool) -> str:
+    now = datetime.now(UTC)
+    claims = {
+        "sub": str(user_id),
+        "iss": ISSUER,
+        "aud": APP_CODE_AUDIENCE,
+        "iat": now,
+        "exp": now + timedelta(minutes=APP_CODE_MINUTES),
+        "chal": challenge,
+        "created": created,
+    }
+    return jwt.encode(claims, settings.signing_secret, algorithm="HS256")
+
+
+def redeem_app_code(settings: Settings, code: str, verifier: str) -> tuple[uuid.UUID, bool] | None:
+    """The account and whether the sign-in made it. None for a forged, expired or stolen code."""
+    try:
+        claims = jwt.decode(
+            code,
+            settings.signing_secret,
+            algorithms=["HS256"],
+            issuer=ISSUER,
+            audience=APP_CODE_AUDIENCE,
+            options={"require": ["sub", "iss", "aud", "exp", "chal"]},
+        )
+        user_id = uuid.UUID(str(claims["sub"]))
+    except (jwt.PyJWTError, ValueError):
+        return None
+    if not hmac.compare_digest(str(claims["chal"]), pkce_challenge(verifier)):
+        return None
+    return user_id, claims.get("created") is True
 
 
 def is_admin(settings: Settings, user: User | None) -> bool:
