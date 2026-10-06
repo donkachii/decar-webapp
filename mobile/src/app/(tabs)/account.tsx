@@ -108,6 +108,7 @@ export default function AccountScreen() {
               {failure.detail ? <Text variant="small">Development build only: {failure.detail}</Text> : null}
             </View>
           ) : null}
+          {__DEV__ && availability.note ? <Text variant="small">Development build only: {availability.note}</Text> : null}
         </Panel>
       ) : (
         <Panel style={styles.gap}>

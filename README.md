@@ -75,7 +75,7 @@ Optional for buyers (past orders, faster checkout) and required for the owner's 
    - `http://localhost:3000/auth/callback`
    - `https://<your-live-domain>/auth/callback`
 3. In `backend/.env`, set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `ADMIN_EMAILS` (the owner's Google address; comma-separate several).
-4. For the phone app, add an iOS and an Android OAuth client and list both in `GOOGLE_MOBILE_CLIENT_IDS`. See [mobile/README.md](mobile/README.md#google-sign-in).
+4. The phone app works with just the Web client: without native sign-in it signs in through the website in an in-app browser. For native sign-in, add an iOS and an Android OAuth client and list both in `GOOGLE_MOBILE_CLIENT_IDS`. See [mobile/README.md](mobile/README.md#google-sign-in).
 
 ## Order emails (no domain needed)
 
