@@ -12,7 +12,7 @@ cp .env.example .env      # point EXPO_PUBLIC_API_URL at an API your phone can r
 pnpm start                # scan the QR code with Expo Go, or press i / a for a simulator
 ```
 
-Everything works in Expo Go. Google sign-in there goes through the website in an in-app browser, which needs the website at an https address Google returns to (see [Google sign-in](#google-sign-in)). Native sign-in needs a development or store build (`npx expo run:ios`, `npx expo run:android`, or `npx eas-cli@latest build --profile development`).
+Everything works in Expo Go. Google sign-in there goes through the website in an in-app browser, which needs the website at an https address Google returns to, such as the live site (see [Google sign-in](#google-sign-in)). Native sign-in needs a development or store build (`npx expo run:ios`, `npx expo run:android`, or `npx eas-cli@latest build --profile development`).
 
 Placing an order writes to whichever database the API uses. Test against a local API, not the live one.
 
@@ -40,7 +40,7 @@ npx expo-doctor           # dependency and config check
 The buttons show whenever the API has Google sign-in on. There are two ways in, and both end with the API's usual 30-day session (kept in the keychain or keystore):
 
 - **Native** (development and store builds with the client IDs below): Google signs the buyer in on the phone and gives the app an ID token. The app sends it to `POST /auth/google/id-token`, and the API checks it was issued to one of the shop's OAuth clients.
-- **Browser** (Expo Go; iOS builds without `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`; Android builds Google answers with `DEVELOPER_ERROR`): the app opens `<EXPO_PUBLIC_SITE_URL>/auth/app` in an in-app browser, and the buyer signs in on the website. The website's `/auth/callback` sends the app back to `decar://auth` (`exp://…/--/auth` in Expo Go) with a 5-minute one-time code. The app redeems it at `POST /auth/google/app-session` with a PKCE verifier that never went through the browser, so the code is no use to anyone else. The API only hands codes to `decar://`, plus `exp://` when `APP_ENV` isn't production.
+- **Browser** (Expo Go; iOS builds without `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`; Android builds Google answers with `DEVELOPER_ERROR`): the app opens `<EXPO_PUBLIC_SITE_URL>/auth/app` in an in-app browser, and the buyer signs in on the website. The website's `/auth/callback` sends the app back to `decar://auth` (`exp://…/--/auth` in Expo Go) with a 5-minute one-time code. The app redeems it at `POST /auth/google/app-session` with a PKCE verifier that never went through the browser, so the code is no use to anyone else. The API only hands codes to `decar://` and Expo Go's `exp://`, which in production must be a private network address.
 
 "Sign in with Google" and "Sign up with Google" on the Account tab run the same flow. The API makes the account the first time it sees a Google address and says so (`created` in the response), so the app can say "Account created" or, after "Sign up", that the buyer already had one.
 
@@ -48,14 +48,17 @@ When the buttons are hidden, a development build says why on the Account tab (th
 
 ### Browser sign-in in development (Expo Go)
 
-Google only sends the browser back to the Web client's authorized redirect URIs, and those must be https or `localhost`. A phone's `localhost` is the phone, so `http://192.168.x.x:3000` can't work. Give the website an https address:
+Google only sends the browser back to the Web client's authorized redirect URIs, and those must be https or `localhost`. A phone's `localhost` is the phone, so `http://192.168.x.x:3000` can't work.
 
-1. Run the website through a tunnel with a fixed address, for example `ngrok http --url=<your-name>.ngrok-free.app 3000`.
-2. Add `https://<your-name>.ngrok-free.app/auth/callback` to the Web client's authorized redirect URIs in Google Cloud Console.
-3. Set the backend's `FRONTEND_URL` and the app's `EXPO_PUBLIC_SITE_URL` to that address, then restart both. They must match: the website keeps the sign-in's `state` in a cookie on the address the app opened, and Google returns to `FRONTEND_URL`.
-4. The website's `API_URL` and the app's `EXPO_PUBLIC_API_URL` must be the same API (one `SESSION_SECRET`), or the code won't redeem.
+The simple way is the live website: set `EXPO_PUBLIC_SITE_URL=https://decar-revolutionist.vercel.app` and `EXPO_PUBLIC_API_URL=https://decar-revolutionist-api.onrender.com`, then `pnpm start --clear`. The app must use the API the website talks to (one `SESSION_SECRET`), or the code won't redeem, so Expo Go then places real orders. The live API accepts Expo Go's `exp://<private IPv4>:<port>/--/auth` (your laptop on Wi-Fi or a hotspot), not tunnel addresses like `exp.direct`.
 
-Store builds need none of this: they open the live website, whose callback is already registered.
+To sign in against a local API instead, give the local website an https address:
+
+1. Run it through a tunnel, for example `ngrok http --url=<your-name>.ngrok-free.app 3000`. A `cloudflared` quick tunnel works too, but its address changes on every restart.
+2. Add `https://<tunnel>/auth/callback` to the Web client's authorized redirect URIs in Google Cloud Console.
+3. Set the backend's `FRONTEND_URL` and the app's `EXPO_PUBLIC_SITE_URL` to that address, and `EXPO_PUBLIC_API_URL` to the local API, then restart both. `FRONTEND_URL` must match `EXPO_PUBLIC_SITE_URL`: the website keeps the sign-in's `state` in a cookie on the address the app opened, and Google returns to `FRONTEND_URL`.
+
+Store builds need none of this: they open the live website.
 
 ### Native sign-in
 

@@ -9,6 +9,8 @@ ADMIN_EMAILS, for every /admin route.
 import base64
 import hashlib
 import hmac
+import ipaddress
+import re
 import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Annotated
@@ -61,11 +63,32 @@ APP_SCHEME = "decar"  # mobile/app.config.ts
 APP_CODE_AUDIENCE = "dcr-app-sign-in"  # session tokens carry no audience, so neither passes as the other
 APP_CODE_MINUTES = 5
 
+# Expo Go's return address on a laptop's network: exp://<IPv4>:<port>/--/auth.
+# Matched whole, so the website's URL parser can't read another host out of it.
+_EXPO_GO_LAN_RETURN = re.compile(r"exps?://(\d{1,3}(?:\.\d{1,3}){3})(?::\d{1,5})?/--/auth")
+
 
 def app_return_allowed(settings: Settings, url: str) -> bool:
-    """Where a browser sign-in may hand its code: the app, plus Expo Go (exp://) outside production."""
-    schemes = {APP_SCHEME} if settings.app_env == "production" else {APP_SCHEME, "exp", "exps"}
-    return urlsplit(url).scheme.lower() in schemes
+    """Where a browser sign-in may hand its code.
+
+    Always the app (decar://). Expo Go (exp://) anywhere outside production;
+    in production only on a private network address, so a code sent there by
+    a crafted link would need a machine on the buyer's own network to catch it.
+    """
+    scheme = urlsplit(url).scheme.lower()
+    if scheme == APP_SCHEME:
+        return True
+    if scheme not in ("exp", "exps"):
+        return False
+    if settings.app_env != "production":
+        return True
+    match = _EXPO_GO_LAN_RETURN.fullmatch(url)
+    if match is None:
+        return False
+    try:
+        return ipaddress.ip_address(match.group(1)).is_private
+    except ValueError:
+        return False
 
 
 def pkce_challenge(verifier: str) -> str:
