@@ -213,6 +213,17 @@ class AppSessionIn(ApiModel):
     verifier: str = Field(pattern=PKCE_VERIFIER)
 
 
+# Lengths are checked in app.domain.accounts, so the forms get their own words.
+class PasswordSignUpIn(ApiModel):
+    email: str = Field(max_length=254)
+    password: str = Field(max_length=1000)
+
+
+class PasswordSignInIn(ApiModel):
+    email: str = Field(max_length=254)
+    password: str = Field(max_length=1000)
+
+
 class SessionOut(ApiModel):
     token: str
     user: UserOut

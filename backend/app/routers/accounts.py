@@ -1,8 +1,10 @@
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import (
@@ -16,6 +18,7 @@ from app.auth import (
 )
 from app.config import Settings
 from app.db import SessionDep
+from app.domain import accounts
 from app.models import Order, User
 from app.schemas import (
     AppCodeOut,
@@ -27,12 +30,14 @@ from app.schemas import (
     GoogleUrlOut,
     MeOut,
     OrderOut,
+    PasswordSignInIn,
+    PasswordSignUpIn,
     SavedCartIn,
     SavedCartOut,
     SessionOut,
     UserOut,
 )
-from app.services import carts, google
+from app.services import carts, google, passwords
 
 router = APIRouter(tags=["accounts"])
 
@@ -107,6 +112,53 @@ async def google_app_session(body: AppSessionIn, session: SessionDep, settings: 
     if redeemed is None or user is None:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Google sign-in didn't finish.")
     return _session_out(settings, user, created=redeemed[1])
+
+
+@router.post(
+    "/auth/password/sign-up",
+    responses={
+        400: {"description": "Bad email or password"},
+        409: {"description": "Email already has an account"},
+    },
+)
+async def password_sign_up(body: PasswordSignUpIn, session: SessionDep, settings: SettingsDep) -> SessionOut:
+    """Makes an email and password account and signs it in. Details are the form's words."""
+    email = accounts.normalise_email(body.email)
+    problem = accounts.sign_up_problem(email, body.password)
+    if problem:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, problem)
+    # A password account with this email first, so the message says "sign in" when it can.
+    existing = await session.scalar(
+        select(User).where(User.email == email).order_by(User.password_hash.is_(None))
+    )
+    if existing is not None:
+        taken = accounts.TAKEN if existing.password_hash else accounts.GOOGLE_ACCOUNT
+        raise HTTPException(status.HTTP_409_CONFLICT, taken)
+
+    user = User(email=email, password_hash=await passwords.hash_password(body.password))
+    session.add(user)
+    try:
+        await session.commit()
+    except IntegrityError as error:  # the same email signing up twice at once
+        raise HTTPException(status.HTTP_409_CONFLICT, accounts.TAKEN) from error
+    return _session_out(settings, user, created=True)
+
+
+@router.post("/auth/password/sign-in", responses={401: {"description": "Wrong email or password"}})
+async def password_sign_in(body: PasswordSignInIn, session: SessionDep, settings: SettingsDep) -> SessionOut:
+    """Signs in an email and password account. Details are the form's words."""
+    email = accounts.normalise_email(body.email)
+    user = await session.scalar(select(User).where(User.email == email, User.password_hash.is_not(None)))
+    matches = await passwords.verify_password(body.password, user.password_hash if user else None)
+    if user is None or not matches:
+        has_google = await session.scalar(
+            select(User.id).where(User.email == email, User.google_sub.is_not(None))
+        )
+        wrong = accounts.GOOGLE_ACCOUNT if user is None and has_google else accounts.WRONG
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, wrong)
+    user.last_sign_in_at = datetime.now(UTC)
+    await session.commit()
+    return _session_out(settings, user, created=False)
 
 
 async def _sign_in(session: AsyncSession, settings: Settings, identity: google.GoogleIdentity) -> SessionOut:

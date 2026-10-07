@@ -174,13 +174,30 @@ class Fitment(Base):
 
 
 class User(Base):
-    """A Google account that has signed in. Buyers are optional; the owner needs one for /admin."""
+    """An account: Google sign-in or an email and password. Buyers are optional;
+    the owner needs a Google one for /admin.
+
+    The two kinds never merge. A password account can't take an email a Google
+    account has, and Google sign-in with a password account's email makes its
+    own account, because the password never proved who owns the address.
+    """
 
     __tablename__ = "users"
     __mapper_args__ = {"eager_defaults": True}  # noqa: RUF012
+    __table_args__ = (
+        CheckConstraint("google_sub IS NOT NULL OR password_hash IS NOT NULL", name="sign_in_check"),
+        Index(
+            "users_password_email_key",
+            "email",
+            unique=True,
+            postgresql_where=text("password_hash IS NOT NULL"),
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, server_default=func.gen_random_uuid())
-    google_sub: Mapped[str] = mapped_column(unique=True)
+    google_sub: Mapped[str | None] = mapped_column(unique=True)
+    # scrypt (app.services.passwords). Null for Google accounts.
+    password_hash: Mapped[str | None]
     email: Mapped[str]
     name: Mapped[str | None]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

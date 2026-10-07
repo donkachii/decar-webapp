@@ -26,11 +26,9 @@ export function Wordmark() {
 export function SiteHeader({
   vehicle,
   user,
-  accountsEnabled,
 }: {
   vehicle: Vehicle | null;
   user: SessionUser | null;
-  accountsEnabled: boolean;
 }) {
   const label = vehicle ? vehicleShortLabel(vehicle) : null;
 
@@ -42,15 +40,13 @@ export function SiteHeader({
           <SiteNav className="ml-6 hidden md:block" />
           <div className="ml-auto flex items-center gap-1">
             <VehicleChip label={label} className="mr-2 hidden max-w-[280px] md:inline-flex" />
-            {accountsEnabled ? (
-              <Link
-                href={user ? "/account" : "/signin"}
-                className="flex h-11 items-center gap-2 rounded-md px-2.5 text-[15px] font-semibold hover:bg-paper"
-              >
-                <UserRound aria-hidden className="size-[22px]" />
-                <span className="sr-only sm:not-sr-only">{user ? "Account" : "Sign in"}</span>
-              </Link>
-            ) : null}
+            <Link
+              href={user ? "/account" : "/signin"}
+              className="flex h-11 items-center gap-2 rounded-md px-2.5 text-[15px] font-semibold hover:bg-paper"
+            >
+              <UserRound aria-hidden className="size-[22px]" />
+              <span className="sr-only sm:not-sr-only">{user ? "Account" : "Sign in"}</span>
+            </Link>
             <CartButton />
           </div>
         </div>

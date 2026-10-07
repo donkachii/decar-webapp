@@ -66,9 +66,15 @@ Supabase hosts the database, not Python apps, so the API runs on a Python host s
 
 Deploy `frontend/` to Vercel (set **Root Directory** to `frontend`). Set `NEXT_PUBLIC_SITE_URL` to the live URL, `API_URL` to the backend's URL, and `NEXT_PUBLIC_WHATSAPP_NUMBER` only if WhatsApp should go to a number other than 0816 645 6295. The build doesn't need the API running.
 
+## Accounts
+
+Optional for buyers (past orders, faster checkout, the same cart on the website and the phone). Guest checkout always works.
+
+**Email and password** needs no setup: `/signin` on the website and the Account tab in the app. Passwords are stored as scrypt hashes. There is no email check and no password reset yet, so a password account never gets into `/admin` and can't use an email that already signs in with Google.
+
 ## Google sign-in
 
-Optional for buyers (past orders, faster checkout) and required for the owner's `/admin` in production. Guest checkout always works. The backend talks to Google; the frontend never sees the client secret.
+Optional for buyers and required for the owner's `/admin` in production. The backend talks to Google; the frontend never sees the client secret.
 
 1. **Google Cloud Console → APIs & Services → OAuth consent screen.** Choose External and fill in the app name and support email.
 2. **Credentials → Create credentials → OAuth client ID → Web application.** Add these authorized redirect URIs:

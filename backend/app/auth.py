@@ -131,7 +131,8 @@ def redeem_app_code(settings: Settings, code: str, verifier: str) -> tuple[uuid.
 
 
 def is_admin(settings: Settings, user: User | None) -> bool:
-    return user is not None and user.email.lower() in settings.admin_email_set
+    """Google accounts only: anyone can sign up with a password and the owner's email."""
+    return user is not None and user.google_sub is not None and user.email.lower() in settings.admin_email_set
 
 
 async def current_user(

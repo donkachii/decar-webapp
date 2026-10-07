@@ -10,7 +10,6 @@ import { VehiclePickerSheet } from "@/components/vehicle-picker";
 import { getUser } from "@/lib/auth";
 import { getVehicles } from "@/lib/catalog";
 import { SITE } from "@/lib/config/site";
-import { getFeatures } from "@/lib/features";
 import { getSelectedVehicle } from "@/lib/vehicle";
 
 import "./globals.css";
@@ -58,12 +57,7 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const [vehicles, vehicle, user, features] = await Promise.all([
-    getVehicles(),
-    getSelectedVehicle(),
-    getUser(),
-    getFeatures(),
-  ]);
+  const [vehicles, vehicle, user] = await Promise.all([getVehicles(), getSelectedVehicle(), getUser()]);
 
   return (
     <html lang="en-NG" className={`${barlow.variable} ${barlowCondensed.variable} ${naira.variable}`}>
@@ -74,7 +68,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
-        <SiteHeader vehicle={vehicle} user={user} accountsEnabled={features.googleSignIn} />
+        <SiteHeader vehicle={vehicle} user={user} />
         <main id="main" className="flex-1">
           {children}
         </main>

@@ -31,7 +31,7 @@ export default async function CheckoutPage() {
       <CheckoutForm
         vehicleId={vehicle?.id ?? null}
         paystack={features.paystack}
-        showSignIn={!user && features.googleSignIn}
+        showSignIn={!user}
         rates={rates}
         defaults={{
           name: user?.name ?? lastOrder?.customerName ?? "",

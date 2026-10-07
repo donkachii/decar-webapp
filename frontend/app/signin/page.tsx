@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { signInWithGoogle } from "@/app/actions/auth";
+import { PasswordForm } from "@/components/password-form";
 import { Button } from "@/components/ui/button";
 import { getUser } from "@/lib/auth";
 import { getFeatures } from "@/lib/features";
@@ -39,19 +40,22 @@ export default async function SignInPage({ searchParams }: PageProps<"/signin">)
         </p>
       ) : null}
 
+      <PasswordForm next={next} />
+
       {googleSignIn ? (
-        <form action={signInWithGoogle} className="mt-6">
-          <input type="hidden" name="next" value={next} />
-          <Button type="submit" variant="outline" size="lg" className="w-full bg-paper">
-            <GoogleMark />
-            Continue with Google
-          </Button>
-        </form>
-      ) : (
-        <p className="mt-6 rounded-md bg-paper px-4 py-3">
-          Google sign-in isn&apos;t set up yet. You can still check out as a guest.
-        </p>
-      )}
+        <>
+          <p className="mt-6 flex items-center gap-3 text-sm before:h-px before:flex-1 before:bg-primer after:h-px after:flex-1 after:bg-primer">
+            or
+          </p>
+          <form action={signInWithGoogle} className="mt-6">
+            <input type="hidden" name="next" value={next} />
+            <Button type="submit" variant="outline" size="lg" className="w-full bg-paper">
+              <GoogleMark />
+              Continue with Google
+            </Button>
+          </form>
+        </>
+      ) : null}
     </div>
   );
 }
