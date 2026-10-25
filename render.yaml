@@ -15,8 +15,11 @@ services:
     region: ohio # next to the database (us-east-2)
     rootDir: backend
     # Node from backend/.node-version; pnpm from package.json's packageManager.
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
-    startCommand: pnpm exec prisma migrate deploy && node dist/server.js
+    # `corepack enable` fails here (it would replace Render's read-only
+    # /usr/bin/pnpm), so corepack runs pnpm directly. The start command skips
+    # pnpm: corepack's download cache doesn't survive from build to run.
+    buildCommand: COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install --frozen-lockfile && corepack pnpm build
+    startCommand: ./node_modules/.bin/prisma migrate deploy && node dist/server.js
     healthCheckPath: /health
     envVars:
       - key: APP_ENV
