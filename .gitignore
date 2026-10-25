@@ -7,7 +7,7 @@ node_modules/
 .env.*
 !.env.example
 
-# Photo sources for `python -m app.photos`; Cloudinary keeps the uploaded copies.
+# Photo sources for `pnpm photos` (backend/); Cloudinary keeps the uploaded copies.
 /photos/
 /decar/
 

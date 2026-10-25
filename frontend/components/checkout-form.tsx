@@ -104,7 +104,7 @@ export function CheckoutForm({
             <p className="text-sm">
               Bought from us before?{" "}
               <Link href="/signin?next=/checkout" className="font-semibold underline underline-offset-2">
-                Sign in with Google
+                Sign in
               </Link>{" "}
               to fill this in. Optional.
             </p>

@@ -4,9 +4,35 @@ import { CONDITION_INFO } from "@/lib/catalog/labels";
 import type { Condition } from "@/lib/catalog/types";
 
 /**
- * Inspection tag: a grade square plus the buyer-facing label. Belgium grades
- * get a solid square; new stock gets an outlined one.
+ * The grade square on its own. Belgium grades are solid wine; new stock is
+ * outlined in navy.
  */
+export function GradeSquare({
+  condition,
+  size = "sm",
+  className,
+}: {
+  condition: Condition;
+  size?: "sm" | "lg";
+  className?: string;
+}) {
+  const belgium = condition.startsWith("belgium-");
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "inline-grid shrink-0 place-items-center font-display font-bold",
+        size === "sm" ? "size-5 rounded-[3px] text-[13px]" : "size-11 rounded-md text-2xl",
+        belgium ? "bg-wine text-paper" : cn("border-navy text-navy", size === "sm" ? "border-[1.5px]" : "border-2"),
+        className,
+      )}
+    >
+      {CONDITION_INFO[condition].grade}
+    </span>
+  );
+}
+
+/** Inspection tag: a grade square plus the buyer-facing label. */
 export function ConditionBadge({
   condition,
   className,
@@ -14,20 +40,10 @@ export function ConditionBadge({
   condition: Condition;
   className?: string;
 }) {
-  const info = CONDITION_INFO[condition];
-  const belgium = condition.startsWith("belgium-");
   return (
     <span className={cn("inline-flex items-center gap-1.5 text-[13px] font-medium leading-none", className)}>
-      <span
-        aria-hidden
-        className={cn(
-          "inline-grid size-5 place-items-center rounded-[3px] font-display text-[13px] font-bold",
-          belgium ? "bg-wine text-paper" : "border-[1.5px] border-navy text-navy",
-        )}
-      >
-        {info.grade}
-      </span>
-      {info.label}
+      <GradeSquare condition={condition} />
+      {CONDITION_INFO[condition].label}
     </span>
   );
 }

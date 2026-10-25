@@ -1,7 +1,7 @@
 import { API_URL } from "./config";
 import { getToken } from "./token";
 
-// The only way the app talks to the FastAPI backend. Unlike the website there
+// The only way the app talks to the backend API. Unlike the website there
 // is no server in between: the app sends its own session token, and the API
 // decides every price, reservation and validation.
 

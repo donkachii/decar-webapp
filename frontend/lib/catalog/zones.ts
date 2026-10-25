@@ -2,7 +2,7 @@ import type { PartType, Position } from "./types";
 
 // Which positions each part type may use, so a door can never be "front" and a
 // hood never "front-left". Drives the listing's position filter; the backend's
-// copy (backend/app/domain/catalog.py) checks the seed data. Change both.
+// copy (backend/src/domain/catalog.ts) checks the seed data. Change both.
 export const TYPE_POSITIONS: Record<PartType, readonly Position[]> = {
   headlight: ["front-left", "front-right"],
   // Outer = body-mounted, inner = boot-lid-mounted. One-piece lamps use rear-left/right.

@@ -1,30 +1,46 @@
 import { cn } from "cn";
-import { Search } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { signInWithGoogle, signOut } from "@/app/actions/auth";
+import { signOut } from "@/app/actions/auth";
 import { ConditionBadge } from "@/components/condition-badge";
 import { PartImage } from "@/components/part-image";
+import { PhotoUpload } from "@/components/photo-upload";
 import { StockChecked } from "@/components/stock-checked";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { getAdminAccess } from "@/lib/auth";
-import { getParts } from "@/lib/catalog";
-import { partTitle } from "@/lib/catalog/labels";
-import type { Part, PartStatus } from "@/lib/catalog/types";
+import { getCategoryPhotos, getParts } from "@/lib/catalog";
+import { isDrawing } from "@/lib/catalog/images";
+import { CATEGORY_INFO, partTitle } from "@/lib/catalog/labels";
+import { CATEGORIES, CATEGORY_TYPES, type Part, type PartStatus } from "@/lib/catalog/types";
+import { getFeatures } from "@/lib/features";
 import { formatDateTime, formatNGN } from "@/lib/format";
 import { DELIVERY_OPTIONS } from "@/lib/orders/delivery";
 import { listOrders } from "@/lib/orders/api";
 import type { Order } from "@/lib/orders/types";
 
-import { cancelOrder, completeOrder, markAvailable, markChecked, markSold } from "./actions";
+import { AccessPanel } from "./access-panel";
+import {
+  cancelOrder,
+  clearCategoryPhoto,
+  completeOrder,
+  markAvailable,
+  markChecked,
+  markSold,
+  setCategoryPhoto,
+} from "./actions";
 
 export const metadata: Metadata = {
   title: "Shop admin",
   robots: { index: false, follow: false },
 };
+
+const VIEWS = ["stock", "photos", "orders"] as const;
+type View = (typeof VIEWS)[number];
+const VIEW_LABEL: Record<View, string> = { stock: "Stock", photos: "Photos", orders: "Orders" };
 
 const STATUS_LABEL: Record<PartStatus, string> = {
   available: "Available",
@@ -37,7 +53,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
   if (!access.allowed) return <AccessPanel reason={access.reason} email={access.user?.email ?? null} />;
 
   const sp = await searchParams;
-  const view = sp.view === "orders" ? "orders" : "stock";
+  const view: View = VIEWS.find((v) => v === sp.view) ?? "stock";
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-6">
@@ -57,24 +73,26 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
         </p>
       ) : null}
 
-      <nav aria-label="Admin" className="mt-5 grid grid-cols-2 gap-1 rounded-md bg-paper p-1">
-        {(["stock", "orders"] as const).map((v) => (
+      <nav aria-label="Admin" className="mt-5 grid grid-cols-3 gap-1 rounded-md bg-paper p-1">
+        {VIEWS.map((v) => (
           <Link
             key={v}
-            href={v === "stock" ? "/admin" : "/admin?view=orders"}
+            href={v === "stock" ? "/admin" : `/admin?view=${v}`}
             aria-current={view === v ? "page" : undefined}
             className={cn(
               "flex h-11 items-center justify-center rounded-[4px] font-display text-xl font-semibold",
               view === v ? "bg-navy text-paper" : "hover:bg-bay",
             )}
           >
-            {v === "stock" ? "Stock" : "Orders"}
+            {VIEW_LABEL[v]}
           </Link>
         ))}
       </nav>
 
       {view === "stock" ? (
         <StockView q={typeof sp.q === "string" ? sp.q : ""} status={typeof sp.status === "string" ? sp.status : ""} />
+      ) : view === "photos" ? (
+        <PhotosView q={typeof sp.q === "string" ? sp.q : ""} />
       ) : (
         <OrdersView />
       )}
@@ -180,6 +198,119 @@ function StockRow({ part }: { part: Part }) {
   );
 }
 
+function photoCount(part: Part): number {
+  return part.images.filter((src) => !isDrawing(src)).length;
+}
+
+async function PhotosView({ q }: { q: string }) {
+  const [all, categoryPhotos, features] = await Promise.all([
+    getParts({ includeSold: true }),
+    getCategoryPhotos(),
+    getFeatures(),
+  ]);
+  const query = q.trim().toLowerCase();
+  const parts = all
+    .filter((p) => !query || p.sku.toLowerCase().includes(query) || partTitle(p).toLowerCase().includes(query))
+    .sort((a, b) => photoCount(a) - photoCount(b) || a.sku.localeCompare(b.sku));
+
+  return (
+    <>
+      {features.photoUploads ? null : (
+        <p className="mt-5 rounded-md border border-dashed border-navy px-3 py-2 text-sm">
+          Photo uploads are off. Add CLOUDINARY_URL to the API&apos;s environment (backend/.env, or Render), then restart it.
+        </p>
+      )}
+
+      <section aria-labelledby="category-photos" className="mt-5">
+        <h2 id="category-photos" className="text-3xl">
+          Category photos
+        </h2>
+        <p className="mt-1 text-sm">
+          The tiles under &ldquo;Shop by part&rdquo; on the home page. Use a wide photo: the tile shows a 4:3 crop.
+          Without one, a tile shows a part in stock.
+        </p>
+        <ul className="mt-3 flex flex-col gap-3">
+          {CATEGORIES.map((category) => {
+            const own = categoryPhotos[category];
+            const partPhoto = all.find((p) => p.category === category && p.status === "available" && !isDrawing(p.images[0]));
+            const src = own ?? partPhoto?.images[0] ?? `/parts/${CATEGORY_TYPES[category][0]}.svg`;
+            return (
+              <li key={category} className="flex gap-3 rounded-md bg-paper p-3">
+                <PartImage src={src} alt="" position="n/a" sizes="96px" className="aspect-[4/3] w-24 shrink-0 self-start rounded-sm border border-bay" />
+                <div className="min-w-0 flex-1">
+                  <p className="font-display text-lg leading-tight font-semibold">{CATEGORY_INFO[category].label}</p>
+                  <p className="text-sm">
+                    {own ? "Your photo" : partPhoto ? "A part's photo, picked for you" : "A drawing until a part has a photo"}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {features.photoUploads ? (
+                      <PhotoUpload
+                        action={setCategoryPhoto.bind(null, category)}
+                        label={own ? "Replace photo" : "Upload photo"}
+                        variant={own ? "outline" : "default"}
+                      />
+                    ) : null}
+                    {own ? (
+                      <form action={clearCategoryPhoto.bind(null, category)}>
+                        <SubmitButton variant="outline" pendingLabel="Saving…">
+                          Use a part&apos;s photo
+                        </SubmitButton>
+                      </form>
+                    ) : null}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section aria-labelledby="part-photos" className="mt-8">
+        <h2 id="part-photos" className="text-3xl">
+          Part photos
+        </h2>
+        <p className="mt-1 text-sm">Parts without photos first.</p>
+        <form className="mt-3 flex gap-2" role="search">
+          <input type="hidden" name="view" value="photos" />
+          <label htmlFor="photo-q" className="sr-only">
+            Search by SKU or name
+          </label>
+          <Input id="photo-q" name="q" defaultValue={q} placeholder="SKU or name" className="flex-1" />
+          <Button type="submit" variant="outline" size="icon" aria-label="Search">
+            <Search aria-hidden />
+          </Button>
+        </form>
+        <ul className="mt-3 flex flex-col gap-2">
+          {parts.map((part) => {
+            const count = photoCount(part);
+            return (
+              <li key={part.sku}>
+                <Link href={`/admin/photos/${part.sku}`} className="flex items-center gap-3 rounded-md bg-paper p-3 transition-shadow duration-200 hover:shadow-lift">
+                  <PartImage
+                    src={part.images[0]}
+                    alt=""
+                    position={part.position}
+                    sizes="56px"
+                    className="size-14 shrink-0 rounded-sm border border-bay"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-display text-lg leading-tight font-semibold">{partTitle(part)}</span>
+                    <span className="block text-[13px] tabular">{part.sku}</span>
+                    <span className="block text-sm font-semibold">
+                      {count === 0 ? "No photos yet" : count === 1 ? "1 photo" : `${count} photos`}
+                    </span>
+                  </span>
+                  <ChevronRight aria-hidden className="size-5 shrink-0" />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </>
+  );
+}
+
 async function OrdersView() {
   const list = await listOrders(50);
   if (list.length === 0) {
@@ -252,37 +383,5 @@ function OrderRow({ order }: { order: Order }) {
         </div>
       ) : null}
     </li>
-  );
-}
-
-function AccessPanel({ reason, email }: { reason: "signed-out" | "not-allowed" | "not-configured"; email: string | null }) {
-  return (
-    <div className="mx-auto max-w-md px-4 pt-12">
-      <h1 className="text-4xl leading-none font-bold">Shop staff</h1>
-      {reason === "signed-out" ? (
-        <>
-          <p className="mt-4 text-[17px]">Sign in with the Google account the shop registered for stock updates.</p>
-          <form action={signInWithGoogle} className="mt-6">
-            <input type="hidden" name="next" value="/admin" />
-            <Button type="submit" size="lg" className="w-full">
-              Sign in with Google
-            </Button>
-          </form>
-        </>
-      ) : reason === "not-allowed" ? (
-        <>
-          <p className="mt-4 text-[17px]">
-            {email ?? "This account"} can&apos;t manage stock. Ask the owner to add it to ADMIN_EMAILS.
-          </p>
-          <form action={signOut} className="mt-6">
-            <Button type="submit" variant="outline">
-              Sign out
-            </Button>
-          </form>
-        </>
-      ) : (
-        <p className="mt-4 text-[17px]">Set up Google sign-in on the API to manage stock. See the README.</p>
-      )}
-    </div>
   );
 }

@@ -1,10 +1,12 @@
-import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
+import { GradeSquare } from "@/components/condition-badge";
 import { DamageSelector, type ZonePart } from "@/components/damage-selector";
+import { Hero } from "@/components/hero";
 import { PartGrid } from "@/components/part-card";
 import { PartImage } from "@/components/part-image";
-import { getParts } from "@/lib/catalog";
+import { getCategoryPhotos, getParts } from "@/lib/catalog";
 import { isDrawing } from "@/lib/catalog/images";
 import {
   CATEGORY_INFO,
@@ -25,9 +27,21 @@ const PROMISES = [
   { title: "Stock you can trust", body: "Each unit shows when we last checked it on the shelf." },
 ];
 
+/** Section heading row: big title on the left, a quiet note on the right. */
+function SectionHead({ id, title, note }: { id: string; title: string; note?: string | null }) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
+      <h2 id={id} className="text-[clamp(40px,6vw,72px)] leading-[0.92] font-bold">
+        {title}
+      </h2>
+      {note ? <p className="text-[15px] text-primer">{note}</p> : null}
+    </div>
+  );
+}
+
 export default async function HomePage() {
   const vehicle = await getSelectedVehicle();
-  const parts = await getParts({ vehicleId: vehicle?.id });
+  const [parts, categoryPhotos] = await Promise.all([getParts({ vehicleId: vehicle?.id }), getCategoryPhotos()]);
   const available = parts.filter((p) => p.status === "available");
 
   const zoneParts: ZonePart[] = vehicle
@@ -58,25 +72,28 @@ export default async function HomePage() {
     .flat();
 
   return (
-    <>
-      {/* Phones: headline, damage selector, then the promises. Desktop: promises under the headline. */}
-      <section className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-8 px-4 pt-8 pb-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:grid-rows-[auto_1fr] lg:gap-x-12 lg:gap-y-8 lg:pt-14">
-        <div className="lg:pt-6">
-          <h1 className="text-[44px] leading-[0.92] font-bold sm:text-6xl lg:text-[76px]">
-            The right part for your Toyota or Lexus. First time.
-          </h1>
-          <p className="mt-5 max-w-[44ch] text-lg leading-relaxed">
-            Genuine Belgium and new body parts from Zuba Market, checked for fit before they leave
-            the shop.
-          </p>
-        </div>
+    <div className="page-dark on-dark bg-navy text-paper">
+      <Hero vehicle={vehicle} />
 
-        <div className="rounded-lg bg-paper p-4 sm:p-6 lg:col-start-2 lg:row-span-2 lg:row-start-1">
-          <h2 className="text-[28px] leading-tight">Where is the damage?</h2>
-          <p className="mt-1 text-[15px]">
-            {vehicle ? `Showing parts for your ${vehicleShortLabel(vehicle)}.` : "Start with your car."}
-          </p>
-          <div className="mt-5">
+      <section aria-label="Our promise" className="relative border-y border-paper/10 bg-navy">
+        <dl className="mx-auto grid max-w-6xl divide-y divide-paper/10 px-4 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          {PROMISES.map(({ title, body }) => (
+            <div key={title} className="py-6 sm:px-6 sm:py-8 sm:first:pl-0 sm:last:pr-0">
+              <dt className="font-display text-2xl leading-tight font-semibold">{title}</dt>
+              <dd className="mt-1 text-[15px] leading-snug text-primer">{body}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      <section aria-labelledby="damage" className="bay-floor border-b border-paper/10">
+        <div className="mx-auto max-w-6xl px-4 py-16 lg:py-24">
+          <SectionHead
+            id="damage"
+            title="Where is the damage?"
+            note={vehicle ? `Showing parts for your ${vehicleShortLabel(vehicle)}` : "Start with your car"}
+          />
+          <div className="mt-10">
             <DamageSelector
               vehicleShortLabel={vehicle ? vehicleShortLabel(vehicle) : null}
               vehicleLabel={vehicle ? vehicleLabel(vehicle) : null}
@@ -84,64 +101,46 @@ export default async function HomePage() {
             />
           </div>
         </div>
-
-        <dl className="max-w-md border-t border-primer lg:col-start-1 lg:row-start-2 lg:self-start">
-          {PROMISES.map((p) => (
-            <div
-              key={p.title}
-              className="grid gap-0.5 border-b border-primer py-3 sm:grid-cols-[9rem_1fr] sm:gap-4"
-            >
-              <dt className="font-display text-lg font-semibold">{p.title}</dt>
-              <dd className="text-[15px]">{p.body}</dd>
-            </div>
-          ))}
-        </dl>
       </section>
 
-      <section aria-labelledby="categories" className="mx-auto max-w-6xl px-4 pb-14">
-        <h2 id="categories" className="text-3xl">
-          Shop by part
-        </h2>
-        <ul className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <section aria-labelledby="categories" className="mx-auto max-w-6xl px-4 pt-16 pb-8 lg:pt-24">
+        <SectionHead
+          id="categories"
+          title="Shop by part"
+          note={vehicle ? `Counted for your ${vehicleShortLabel(vehicle)}` : null}
+        />
+        <ul className="mt-8 grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-4 lg:grid-cols-4">
           {CATEGORIES.map((category) => {
             const inCategory = available.filter((p) => p.category === category);
-            const photo = inCategory.find((p) => !isDrawing(p.images[0]));
+            // The owner's tile photo from /admin, else the first in-stock part photo, else a drawing.
+            const partPhoto = inCategory.find((p) => !isDrawing(p.images[0]));
+            const photo = categoryPhotos[category] ?? partPhoto?.images[0] ?? `/parts/${CATEGORY_TYPES[category][0]}.svg`;
             return (
               <li key={category} className="flex">
-                <Link
-                  href={`/shop/${category}`}
-                  className="group flex w-full flex-col overflow-hidden rounded-md bg-paper hover:shadow-[0_0_0_1.5px_var(--color-navy)]"
-                >
-                  {photo ? (
-                    <PartImage
-                      src={photo.images[0]}
-                      alt=""
-                      position={photo.position}
-                      sizes="(min-width: 1024px) 270px, 50vw"
-                      className="aspect-[4/3]"
-                    />
-                  ) : (
-                    <div className="grid aspect-[4/3] place-items-center border-b border-bay">
-                      <Image
-                        src={`/parts/${CATEGORY_TYPES[category][0]}.svg`}
-                        alt=""
-                        width={96}
-                        height={96}
-                        unoptimized
-                        className="size-20 sm:size-24"
-                      />
-                    </div>
-                  )}
-                  <span className="flex flex-1 flex-col p-3 sm:p-4">
-                    <span className="font-display text-2xl leading-none font-bold group-hover:underline group-hover:decoration-primer group-hover:underline-offset-2">
+                <Link href={`/shop/${category}`} className="group flex w-full flex-col rounded-xl">
+                  <PartImage
+                    src={photo}
+                    alt=""
+                    position="n/a"
+                    sizes="(min-width: 1024px) 270px, 50vw"
+                    className="rounded-xl"
+                  />
+                  <span className="mt-4 flex items-center justify-between gap-2">
+                    <span className="font-display text-[28px] leading-none font-bold sm:text-4xl">
                       {CATEGORY_INFO[category].label}
                     </span>
-                    <span className="mt-1.5 text-sm">{CATEGORY_INFO[category].blurb}</span>
-                    <span className="mt-auto pt-3 text-sm font-semibold tabular">
-                      {inCategory.length === 0
-                        ? "Not listed online yet"
-                        : `${inCategory.length} in stock${vehicle ? ` for your ${vehicle.model}` : ""}`}
+                    <span
+                      aria-hidden
+                      className="grid size-9 shrink-0 place-items-center rounded-full border border-paper/30 transition-colors group-hover:border-tan group-hover:bg-tan group-hover:text-navy"
+                    >
+                      <ArrowUpRight className="size-4" />
                     </span>
+                  </span>
+                  <span className="mt-2 text-sm leading-snug text-primer">{CATEGORY_INFO[category].blurb}</span>
+                  <span className="mt-auto pt-2 text-sm font-semibold tabular">
+                    {inCategory.length === 0
+                      ? "Not listed online yet"
+                      : `${inCategory.length} in stock${vehicle ? ` for your ${vehicle.model}` : ""}`}
                   </span>
                 </Link>
               </li>
@@ -151,42 +150,39 @@ export default async function HomePage() {
       </section>
 
       {justChecked.length > 0 ? (
-        <section aria-labelledby="just-checked" className="mx-auto max-w-6xl px-4 pb-14">
-          <div className="flex items-end justify-between gap-4">
-            <h2 id="just-checked" className="text-3xl">
-              Just checked on the shelf
-            </h2>
-          </div>
-          <div className="mt-5">
+        <section aria-labelledby="just-checked" className="mx-auto max-w-6xl px-4 pt-16 pb-8 lg:pt-24">
+          <SectionHead id="just-checked" title="Just checked on the shelf" note="Freshest stock checks first" />
+          <div className="on-light mt-8 text-navy">
             <PartGrid parts={justChecked} />
           </div>
         </section>
       ) : null}
 
-      <section aria-labelledby="grades" className="mx-auto max-w-6xl px-4 pb-6">
-        <div className="grid gap-8 rounded-lg bg-paper p-5 sm:p-8 lg:grid-cols-[1fr_1.6fr]">
-          <div>
-            <h2 id="grades" className="text-3xl">
+      <section aria-labelledby="grades" className="mx-auto max-w-6xl px-4 pt-16 pb-20 lg:pt-24 lg:pb-28">
+        <div className="on-light overflow-hidden rounded-2xl bg-paper text-navy">
+          <div className="grid gap-3 p-5 sm:p-8 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-12">
+            <h2 id="grades" className="text-4xl leading-none font-bold sm:text-5xl">
               How we grade every part
             </h2>
-            <p className="mt-3 max-w-[40ch]">
-              Belgium parts are genuine Toyota and Lexus parts from foreign-used cars. Each unit is
-              one of a kind, photographed and graded on its own.
-            </p>
-            <p className="mt-5 text-[15px]">
-              Visit us at {SITE.shopLine}, {SITE.marketLine}.
+            <p className="max-w-[56ch] leading-relaxed">
+              Belgium parts are genuine parts from foreign-used Japanese cars. Each unit is one of a
+              kind, photographed and graded on its own. Visit us at {SITE.shopLine},{" "}
+              {SITE.marketLine}.
             </p>
           </div>
-          <dl className="divide-y divide-bay">
+          <dl className="grid divide-y divide-navy/10 border-t border-navy/10 lg:grid-cols-5 lg:divide-x lg:divide-y-0">
             {CONDITIONS.map((c) => (
-              <div key={c} className="grid gap-0.5 py-3 first:pt-0 sm:grid-cols-[minmax(0,11rem)_1fr] sm:gap-4">
-                <dt className="font-semibold">{CONDITION_INFO[c].label}</dt>
-                <dd>{CONDITION_INFO[c].meaning}</dd>
+              <div key={c} className="flex gap-4 px-5 py-4 sm:px-8 lg:flex-col lg:gap-5 lg:px-6 lg:py-7">
+                <GradeSquare condition={c} size="lg" />
+                <div>
+                  <dt className="font-display text-lg leading-tight font-semibold">{CONDITION_INFO[c].label}</dt>
+                  <dd className="mt-1 text-[15px] leading-snug">{CONDITION_INFO[c].meaning}</dd>
+                </div>
               </div>
             ))}
           </dl>
         </div>
       </section>
-    </>
+    </div>
   );
 }

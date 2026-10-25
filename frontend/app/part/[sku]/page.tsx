@@ -1,4 +1,4 @@
-import { CircleAlert, MessageCircle } from "lucide-react";
+import { Bus, ChevronRight, CircleAlert, MessageCircle, Store, Truck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -34,6 +34,9 @@ import { isBelgium, type Part } from "@/lib/catalog/types";
 import { zoneFor } from "@/lib/catalog/zones";
 import { SITE } from "@/lib/config/site";
 import { formatNGN } from "@/lib/format";
+import { getDeliveryRates } from "@/lib/orders/api";
+import { DELIVERY_OPTIONS, DELIVERY_ORDER } from "@/lib/orders/delivery";
+import type { DeliveryOption } from "@/lib/orders/types";
 import { getSelectedVehicle } from "@/lib/vehicle";
 import { partEnquiryMessage, whatsappLink } from "@/lib/whatsapp";
 
@@ -60,10 +63,12 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
   const part = await loadPart((await params).sku);
   if (!part) notFound();
 
-  const [fitment, selected, together] = await Promise.all([
+  const [fitment, selected, together, rates] = await Promise.all([
     getPartFitment(part.sku),
     getSelectedVehicle(),
     getReplacedTogether(part),
+    // The fee is a courtesy here; checkout re-reads it. A failed read just hides the amounts.
+    getDeliveryRates().catch(() => null),
   ]);
 
   const title = partTitle(part);
@@ -83,22 +88,27 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pt-6">
-      <nav aria-label="Breadcrumb" className="text-sm">
-        <Link href={`/shop/${part.category}`} className="font-semibold underline underline-offset-2">
-          {CATEGORY_INFO[part.category].label}
-        </Link>
-        <span aria-hidden className="px-2 text-primer">/</span>
-        <Link
-          href={`/shop/${part.category}?type=${part.type}`}
-          className="font-semibold underline underline-offset-2"
-        >
-          {TYPE_INFO[part.type].plural}
-        </Link>
+      <nav aria-label="Breadcrumb">
+        <ol className="flex items-center gap-1 text-sm font-semibold">
+          <li>
+            <Link href={`/shop/${part.category}`} className="underline-offset-2 hover:underline">
+              {CATEGORY_INFO[part.category].label}
+            </Link>
+          </li>
+          <li aria-hidden>
+            <ChevronRight className="size-4 text-primer" />
+          </li>
+          <li>
+            <Link href={`/shop/${part.category}?type=${part.type}`} className="underline-offset-2 hover:underline">
+              {TYPE_INFO[part.type].plural}
+            </Link>
+          </li>
+        </ol>
       </nav>
 
       <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-12">
-        <div className="lg:sticky lg:top-6 lg:self-start">
-          <PartGallery images={part.images} alt={title} position={part.position} />
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <PartGallery sku={part.sku} images={part.images} alt={title} position={part.position} />
           {isDrawing(part.images[0]) ? (
             <p className="mt-2 text-sm">Drawing shown. Ask on WhatsApp for photos of this unit.</p>
           ) : null}
@@ -111,50 +121,68 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
             {formatNGN(part.priceNGN)}
           </p>
 
-          <div className="mt-4 space-y-1 text-[15px]">
-            <p className={available ? "font-semibold" : "font-semibold text-warn"}>{stockLine(part)}</p>
-            <StockChecked at={part.stockCheckedAt} className="block" />
+          <div className="mt-6 rounded-2xl bg-paper p-4 shadow-card sm:p-5">
+            <div className="space-y-1 text-[15px]">
+              <p className={available ? "font-semibold" : "font-semibold text-warn"}>{stockLine(part)}</p>
+              <StockChecked at={part.stockCheckedAt} className="block" />
+            </div>
+
+            <div className="mt-4">
+              {selected ? (
+                <FitStatus fits={fits} vehicleShortLabel={vehicleShortLabel(selected)} className="text-base" />
+              ) : (
+                <div className="flex flex-wrap items-center gap-3 rounded-lg border border-dashed border-navy/50 bg-bay/60 px-3 py-2.5">
+                  <p className="text-[15px]">Choose your car to check this part fits it.</p>
+                  <ChooseCarButton variant="outline" className="h-9 px-3 text-sm" />
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 grid gap-2">
+              {available ? (
+                <AddToCartButton sku={part.sku} maxQty={part.stockQty} size="lg" />
+              ) : (
+                <p className="flex items-start gap-2 rounded-lg bg-bay px-3 py-3 font-semibold text-warn">
+                  <CircleAlert aria-hidden className="mt-0.5 size-[18px] shrink-0" />
+                  {part.status === "sold"
+                    ? "This unit has been sold."
+                    : "Another buyer has reserved this unit. Ask us if it comes back."}
+                </p>
+              )}
+              <a
+                href={whatsappLink(partEnquiryMessage({ sku: part.sku, title, url }))}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-navy bg-paper px-4 font-semibold hover:bg-bay"
+              >
+                <MessageCircle aria-hidden className="size-[18px]" />
+                Ask about this part on WhatsApp
+              </a>
+            </div>
+
+            <ul aria-label="Delivery" className="mt-5 divide-y divide-navy/10 border-t border-navy/10">
+              {DELIVERY_ORDER.map((option) => {
+                const Icon = DELIVERY_ICONS[option];
+                const fee = rates ? rates[option][part.shippingClass] : null;
+                return (
+                  <li key={option} className="flex items-center gap-3 py-2.5 text-[15px] last:pb-0">
+                    <Icon aria-hidden className="size-[18px] shrink-0" strokeWidth={1.75} />
+                    <span className="flex-1">{DELIVERY_OPTIONS[option].label}</span>
+                    <span className="font-semibold tabular">
+                      {fee === null ? "At checkout" : fee === 0 ? "Free" : formatNGN(fee)}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
-          <div className="mt-5">
-            {selected ? (
-              <FitStatus fits={fits} vehicleShortLabel={vehicleShortLabel(selected)} className="text-base" />
-            ) : (
-              <div className="flex flex-wrap items-center gap-3 rounded-md border border-dashed border-navy px-3 py-2.5">
-                <p className="text-[15px]">Choose your car to check this part fits it.</p>
-                <ChooseCarButton variant="outline" className="h-9 px-3 text-sm" />
-              </div>
-            )}
-          </div>
-
-          <div className="mt-6 grid gap-2 sm:max-w-sm">
-            {available ? (
-              <AddToCartButton sku={part.sku} maxQty={part.stockQty} size="lg" />
-            ) : (
-              <p className="flex items-start gap-2 rounded-md bg-paper px-3 py-3 font-semibold text-warn">
-                <CircleAlert aria-hidden className="mt-0.5 size-[18px] shrink-0" />
-                {part.status === "sold"
-                  ? "This unit has been sold."
-                  : "Another buyer has reserved this unit. Ask us if it comes back."}
-              </p>
-            )}
-            <a
-              href={whatsappLink(partEnquiryMessage({ sku: part.sku, title, url }))}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-navy bg-paper px-4 font-semibold hover:bg-bay"
-            >
-              <MessageCircle aria-hidden className="size-[18px]" />
-              Ask about this part on WhatsApp
-            </a>
-          </div>
-
-          <div className="mt-8 border-t border-primer">
+          <div className="mt-6 rounded-2xl bg-paper px-4 shadow-card sm:px-5">
             <SheetRow heading="Condition">
               <p className="font-semibold">{CONDITION_INFO[part.condition].label}</p>
               <p className="mt-1">{CONDITION_INFO[part.condition].meaning}</p>
               {part.defects?.length ? (
-                <div className="mt-3 rounded-md bg-paper p-3">
+                <div className="mt-3 rounded-lg bg-bay p-3">
                   <p className="font-semibold">What to know about this unit</p>
                   <ul className="mt-1.5 list-disc space-y-1 pl-5">
                     {part.defects.map((d) => (
@@ -178,9 +206,9 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
 
             {variants.length > 0 ? (
               <SheetRow heading="Specification">
-                <dl className="divide-y divide-bay">
+                <dl className="divide-y divide-navy/10">
                   {variants.map(([key, value]) => (
-                    <div key={key} className="flex justify-between gap-4 py-1.5 first:pt-0">
+                    <div key={key} className="flex justify-between gap-4 py-1.5 first:pt-0 last:pb-0">
                       <dt>{variantLabel(key)}</dt>
                       <dd className="font-semibold">{variantValue(value)}</dd>
                     </div>
@@ -207,7 +235,7 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
               <dl className="space-y-1.5">
                 <div className="flex justify-between gap-4">
                   <dt>SKU</dt>
-                  <dd className="font-semibold tabular">{part.sku}</dd>
+                  <dd className="min-w-0 font-semibold break-all tabular">{part.sku}</dd>
                 </div>
                 {part.oemNumber ? (
                   <div className="flex justify-between gap-4">
@@ -232,8 +260,8 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
       </div>
 
       {together.length > 0 ? (
-        <section aria-labelledby="together" className="mt-14">
-          <h2 id="together" className="text-3xl">
+        <section aria-labelledby="together" className="mt-16">
+          <h2 id="together" className="text-3xl sm:text-4xl">
             Usually replaced together
           </h2>
           <p className="mt-1">From the same shelf, for the same car.</p>
@@ -244,8 +272,8 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
       ) : null}
 
       {alternatives.length > 0 ? (
-        <section aria-labelledby="alternatives" className="mt-14">
-          <h2 id="alternatives" className="text-3xl">
+        <section aria-labelledby="alternatives" className="mt-16">
+          <h2 id="alternatives" className="text-3xl sm:text-4xl">
             Still on the shelf for this car
           </h2>
           <div className="mt-5">
@@ -257,7 +285,7 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
       {/* Phones: price and Add to cart stay in reach below the photos. Sticky, not
           fixed, so it leaves with the page content and never covers the footer. */}
       {available ? (
-        <div className="sticky bottom-0 z-30 -mx-4 mt-10 border-t border-primer bg-paper px-4 py-3 lg:hidden">
+        <div className="sticky bottom-0 z-30 -mx-4 mt-10 border-t border-navy/10 bg-paper px-4 py-3 shadow-[0_-8px_24px_-12px_color-mix(in_srgb,var(--color-navy)_30%,transparent)] lg:hidden">
           <div className="flex items-center gap-3">
             <div className="min-w-0">
               <p className="font-display text-2xl leading-none font-bold tabular">{formatNGN(part.priceNGN)}</p>
@@ -271,9 +299,11 @@ export default async function PartPage({ params }: PageProps<"/part/[sku]">) {
   );
 }
 
+const DELIVERY_ICONS: Record<DeliveryOption, typeof Store> = { pickup: Store, abuja: Truck, waybill: Bus };
+
 function SheetRow({ heading, children }: { heading: string; children: ReactNode }) {
   return (
-    <section className="grid gap-2 border-b border-primer py-5 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
+    <section className="grid gap-2 border-b border-navy/10 py-5 last:border-b-0 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
       <h2 className="text-xl leading-tight">{heading}</h2>
       <div className="text-[15px] leading-relaxed">{children}</div>
     </section>

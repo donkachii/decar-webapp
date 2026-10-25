@@ -14,6 +14,8 @@ const buttonVariants = cva(
           "bg-tan text-navy hover:shadow-[inset_0_0_0_2px_var(--color-navy)]",
         outline:
           "border-navy bg-paper text-navy hover:bg-bay aria-expanded:bg-bay",
+        // Outline for navy and wine grounds.
+        inverse: "border-paper/60 text-paper hover:border-paper hover:bg-paper/10",
         secondary: "bg-navy text-paper hover:shadow-[inset_0_0_0_2px_var(--color-primer)]",
         ghost: "text-navy hover:bg-bay aria-expanded:bg-bay",
         destructive: "border-warn bg-paper text-warn hover:bg-bay",

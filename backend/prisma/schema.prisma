@@ -1,0 +1,181 @@
+// Database tables. Mirrors CLAUDE.md section 5; change both together.
+//
+// Domain unions (make, category, type, position, condition, status…) are text
+// columns guarded by check constraints, not native enums: adding a part type is
+// a one-line constraint change. Prisma can't express check constraints, the
+// updated_at trigger, row-level security or the order number sequence, so they
+// live in the migration SQL (prisma/migrations/0_init). Every rule in CLAUDE.md
+// section 3 that the database can check is checked there, so bad data can't get
+// in through a database dashboard either.
+//
+// Column names stay snake_case in Postgres; @map gives them camelCase names in
+// TypeScript.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+  previewFeatures     = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Vehicle {
+  id         String  @id // 'toyota-camry-xv50-f'
+  make       String
+  model      String // 'Camry'
+  generation String // 'XV50'
+  yearFrom   Int     @map("year_from")
+  yearTo     Int     @map("year_to")
+  facelift   Boolean
+
+  fitment Fitment[]
+  orders  Order[]
+
+  // Rule 1: the fitment key is make + model + generation + facelift. Never year alone.
+  @@unique([make, model, generation, facelift])
+  @@map("vehicles")
+}
+
+model Part {
+  sku            String   @id
+  name           String
+  category       String
+  type           String
+  // Rule 2: position is its own field, never a boolean side.
+  position       String
+  condition      String
+  defects        String[] @default([])
+  oemNumber      String?  @map("oem_number")
+  // Rule 3: variants are structured fields, never prose.
+  variants       Json     @default("{}")
+  priceNGN       Int      @map("price_ngn")
+  stockQty       Int      @map("stock_qty")
+  status         String   @default("available")
+  // Rule 5: stock truth. Every write that touches stock stamps this.
+  stockCheckedAt DateTime @default(now()) @map("stock_checked_at") @db.Timestamptz(6)
+  shippingClass  String   @map("shipping_class")
+  images         String[] @default([])
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  // Kept current by the parts_touch_updated_at trigger, so dashboard edits count too.
+  updatedAt      DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  fitment    Fitment[]
+  orderItems OrderItem[]
+  cartLines  CartLine[]
+
+  @@index([category])
+  @@index([status])
+  @@map("parts")
+}
+
+/// The owner's photo for a category tile on the home page, set in /admin.
+/// Without a row, the tile shows the first in-stock part photo in the category.
+model CategoryPhoto {
+  category String @id
+  image    String // Cloudinary delivery URL; a new upload is a new version, so a new URL
+
+  @@map("category_photos")
+}
+
+model Fitment {
+  partSku   String  @map("part_sku")
+  vehicleId String  @map("vehicle_id")
+  notes     String? // 'needs fog lamp holes', 'no parking sensor holes'
+
+  part    Part    @relation(fields: [partSku], references: [sku], onDelete: Cascade)
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([partSku, vehicleId])
+  @@index([vehicleId])
+  @@map("fitment")
+}
+
+/// An account: Google sign-in or an email and password. Buyers are optional;
+/// the owner needs a Google one for /admin.
+///
+/// The two kinds never merge. A password account can't take an email a Google
+/// account has, and Google sign-in with a password account's email makes its
+/// own account, because the password never proved who owns the address. So
+/// email is unique among password accounts only.
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  googleSub    String?  @unique @map("google_sub")
+  // scrypt (src/services/passwords.ts). Null for Google accounts.
+  passwordHash String?  @map("password_hash")
+  email        String   @unique(map: "users_password_email_key", where: raw("(password_hash IS NOT NULL)"))
+  name         String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  lastSignInAt DateTime @default(now()) @map("last_sign_in_at") @db.Timestamptz(6)
+
+  cartLines CartLine[]
+  orders    Order[]
+
+  @@map("users")
+}
+
+/// A signed-in buyer's saved cart, so the website and the phone app show the same one.
+///
+/// SKU and quantity only, like the clients' carts. Saving never reserves a unit
+/// (CLAUDE.md section 7); checkout re-reads status and price.
+model CartLine {
+  userId String @map("user_id") @db.Uuid
+  // A part pruned from the catalog leaves every cart with it.
+  sku    String
+  qty    Int
+  lineNo Int    @map("line_no") // the order the buyer added them in
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  part Part @relation(fields: [sku], references: [sku], onDelete: Cascade)
+
+  @@id([userId, sku])
+  @@map("cart_lines")
+}
+
+model Order {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  number            String   @unique // 'DCR-00012', from order_number_seq
+  userId            String?  @map("user_id") @db.Uuid
+  customerName      String   @map("customer_name")
+  customerPhone     String   @map("customer_phone")
+  customerEmail     String?  @map("customer_email")
+  vehicleId         String?  @map("vehicle_id")
+  deliveryOption    String   @map("delivery_option")
+  deliveryAddress   String?  @map("delivery_address")
+  deliveryState     String?  @map("delivery_state")
+  deliveryPark      String?  @map("delivery_park")
+  deliveryFeeNGN    Int      @map("delivery_fee_ngn")
+  subtotalNGN       Int      @map("subtotal_ngn")
+  totalNGN          Int      @map("total_ngn")
+  paymentMethod     String   @map("payment_method")
+  paymentStatus     String   @default("pending") @map("payment_status")
+  paystackReference String?  @unique @map("paystack_reference")
+  status            String   @default("new")
+  notes             String?
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  items   OrderItem[]
+  user    User?       @relation(fields: [userId], references: [id], onUpdate: NoAction)
+  vehicle Vehicle?    @relation(fields: [vehicleId], references: [id], onUpdate: NoAction)
+
+  @@index([createdAt(sort: Desc)])
+  @@index([userId])
+  @@map("orders")
+}
+
+model OrderItem {
+  orderId  String @map("order_id") @db.Uuid
+  sku      String
+  name     String // snapshot at order time
+  priceNGN Int    @map("price_ngn") // snapshot at order time, read from the catalog, never the cart
+  qty      Int
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  part  Part  @relation(fields: [sku], references: [sku], onDelete: NoAction)
+
+  @@id([orderId, sku])
+  @@map("order_items")
+}

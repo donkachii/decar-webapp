@@ -2,7 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-// The only way the frontend talks to the FastAPI backend. Server-side only:
+// The only way the frontend talks to the backend API. Server-side only:
 // the browser never calls the API directly, so API_URL can stay private and
 // the session token never leaves its httpOnly cookie.
 
@@ -25,9 +25,11 @@ export class ApiError extends Error {
 type QueryValue = string | number | boolean | readonly string[] | null | undefined;
 
 interface ApiOptions {
-  method?: "GET" | "POST" | "PUT";
+  method?: "GET" | "POST" | "PUT" | "DELETE";
   query?: Record<string, QueryValue>;
   body?: unknown;
+  /** A photo to send as the raw body, with its own type, instead of JSON. */
+  file?: Blob;
   /** Send the signed-in user's session token, if there is one. */
   session?: boolean;
 }
@@ -41,7 +43,8 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   }
 
   const headers: Record<string, string> = { accept: "application/json" };
-  if (options.body !== undefined) headers["content-type"] = "application/json";
+  if (options.file) headers["content-type"] = options.file.type;
+  else if (options.body !== undefined) headers["content-type"] = "application/json";
   if (options.session) {
     const token = (await cookies()).get(SESSION_COOKIE)?.value;
     if (token) headers.authorization = `Bearer ${token}`;
@@ -51,7 +54,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   const res = await fetch(url, {
     method: options.method ?? "GET",
     headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    body: options.file ?? (options.body === undefined ? undefined : JSON.stringify(options.body)),
     cache: "no-store",
   });
   const text = await res.text();

@@ -10,15 +10,16 @@ import { API_URL, GOOGLE_CLIENT_IDS, SITE_URL } from "./config";
 import { useFeatures } from "./features";
 import { clearToken, saveToken, useTokenStore } from "./token";
 
-// Google sign-in is optional for buyers: it links orders to an account and
-// fills in checkout. It is never required to buy.
+// Accounts are optional for buyers: they link orders to an account and fill
+// in checkout. They are never required to buy.
 //
-// Two ways in, one session. Where the build can, Google signs the buyer in on
+// An email and password always works (POST /auth/password/sign-in, /sign-up).
+// Google has two ways in. Where the build can, Google signs the buyer in on
 // the phone and gives the app an ID token (POST /auth/google/id-token).
 // Everywhere else (Expo Go, iOS without an iOS OAuth client) the app opens the
 // website's Google sign-in in an in-app browser, gets back a one-time code and
 // redeems it with a PKCE verifier only it holds (POST /auth/google/app-session).
-// Either way the API issues its own 30-day session token, the same one the
+// Every way ends with the API's own 30-day session token, the same one the
 // website keeps in a cookie.
 
 export interface SessionUser {
@@ -68,11 +69,6 @@ export function useSignInAvailability(): SignInAvailability {
   return { available: true, note: method === "browser" ? BROWSER_NOTE : null };
 }
 
-/** Whether to offer "Sign in with Google": the API has it on. */
-export function useCanSignIn(): boolean {
-  return useSignInAvailability().available;
-}
-
 /** The signed-in buyer. Null for guests and for expired sessions. */
 export function useMe() {
   const token = useTokenStore((s) => s.token);
@@ -110,6 +106,7 @@ async function googleSignin() {
 export type SignInResult = "signed-in" | "signed-up" | "cancelled";
 
 const DIDNT_FINISH = "Google sign-in didn't finish. Try again, or carry on without an account.";
+const DIDNT_FINISH_PASSWORD = "We couldn't sign you in just now. Try again, or carry on without an account.";
 const OFFLINE = "We couldn't reach the shop just now. Check your connection and try again.";
 const NO_PLAY_SERVICES = "This phone needs Google Play services to sign in with Google. You can still buy without an account.";
 // Android's CommonStatusCodes.DEVELOPER_ERROR: Google doesn't know this build's package name and SHA-1.
@@ -240,6 +237,39 @@ export function useSignIn() {
     let session = method === "native" ? await nativeSignIn() : await browserSignIn();
     if (session === "browser") session = await browserSignIn();
     if (session === "cancelled") return "cancelled";
+    await saveToken(session.token);
+    await client.invalidateQueries({ queryKey: ["me"] });
+    return session.created ? "signed-up" : "signed-in";
+  };
+}
+
+export type PasswordMode = "sign-in" | "sign-up";
+
+const PASSWORD_PATH: Record<PasswordMode, string> = {
+  "sign-in": "/auth/password/sign-in",
+  "sign-up": "/auth/password/sign-up",
+};
+
+/**
+ * Email and password: signs in, or makes the account and signs it in. The
+ * API's refusals (wrong password, email taken, password too short) are already
+ * in the form's words (backend src/domain/accounts.ts), so they show as they are.
+ */
+export function usePasswordSignIn() {
+  const client = useQueryClient();
+  return async (mode: PasswordMode, email: string, password: string): Promise<SignInResult> => {
+    const path = PASSWORD_PATH[mode];
+    let session: Session;
+    try {
+      session = await api<Session>(path, { method: "POST", body: { email, password } });
+    } catch (error) {
+      if (!(error instanceof ApiError)) throw new SignInError(OFFLINE, `Couldn't reach the API at ${API_URL}.`);
+      const detail = (error.body as { detail?: unknown } | null)?.detail;
+      if ([400, 401, 409].includes(error.status) && typeof detail === "string") {
+        throw new SignInError(detail, `The API answered ${error.status} to POST ${path}.`);
+      }
+      throw new SignInError(DIDNT_FINISH_PASSWORD, apiProblem(path, error));
+    }
     await saveToken(session.token);
     await client.invalidateQueries({ queryKey: ["me"] });
     return session.created ? "signed-up" : "signed-in";

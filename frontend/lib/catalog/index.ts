@@ -5,10 +5,10 @@ import { cache } from "react";
 import { apiSource } from "./api-source";
 import { pickReplacedTogether } from "./related";
 import type { CatalogSource } from "./source";
-import type { Fitment, Part, PartFilters, PartStatus, Vehicle } from "./types";
+import type { Category, CategoryPhotos, Fitment, Part, PartFilters, PartStatus, Vehicle } from "./types";
 
 // All catalog access goes through this module (CLAUDE.md section 6). The data
-// lives behind the FastAPI backend; swapping backends means another source.
+// lives behind the backend API; swapping backends means another source.
 
 const source: CatalogSource = apiSource;
 
@@ -33,6 +33,8 @@ export function getPartsBySku(skus: string[]): Promise<Part[]> {
 export function getFitment(query: { partSkus?: string[]; vehicleId?: string }): Promise<Fitment[]> {
   return source.getFitment(query);
 }
+
+export const getCategoryPhotos = cache((): Promise<CategoryPhotos> => source.getCategoryPhotos());
 
 export interface FitmentWithVehicle extends Fitment {
   vehicle: Vehicle;
@@ -65,4 +67,20 @@ export function setPartStatus(sku: string, status: PartStatus): Promise<void> {
 
 export function touchStockCheck(sku: string): Promise<void> {
   return source.touchStockCheck(sku);
+}
+
+export function addPartPhoto(sku: string, photo: Blob): Promise<string[]> {
+  return source.addPartPhoto(sku, photo);
+}
+
+export function setPartPhotos(sku: string, images: string[]): Promise<string[]> {
+  return source.setPartPhotos(sku, images);
+}
+
+export function setCategoryPhoto(category: Category, photo: Blob): Promise<void> {
+  return source.setCategoryPhoto(category, photo);
+}
+
+export function clearCategoryPhoto(category: Category): Promise<void> {
+  return source.clearCategoryPhoto(category);
 }

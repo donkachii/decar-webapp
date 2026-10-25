@@ -23,7 +23,7 @@ import {
 } from "@/lib/domain";
 import { useFeatures } from "@/lib/features";
 import { placeOrder, useDeliveryRates, usePlacedOrders, verifyPaystack, type CheckoutField } from "@/lib/orders";
-import { signInFailure, useCanSignIn, useMe, useSignIn } from "@/lib/session";
+import { useMe } from "@/lib/session";
 import { useSelectedVehicle } from "@/lib/vehicle";
 import { orderMessage } from "@/lib/whatsapp";
 import { color, radius } from "@/theme";
@@ -43,8 +43,6 @@ export default function CheckoutScreen() {
   const rates = useDeliveryRates();
   const features = useFeatures();
   const me = useMe();
-  const canSignIn = useCanSignIn();
-  const signIn = useSignIn();
   const clearCart = useCartStore((s) => s.clear);
   const remember = usePlacedOrders((s) => s.remember);
   const client = useQueryClient();
@@ -56,7 +54,6 @@ export default function CheckoutScreen() {
   const [message, setMessage] = useState<string | null>(null);
   const [unavailable, setUnavailable] = useState<string[]>([]);
   const [pending, setPending] = useState(false);
-  const [signInError, setSignInError] = useState<string | null>(null);
   // "Place order" sits at the bottom; problems are listed at the top.
   const scroll = useRef<ScrollView>(null);
   const showProblem = (text: string) => {
@@ -162,27 +159,12 @@ export default function CheckoutScreen() {
 
       <View style={styles.sections}>
         <Fieldset legend="Your details">
-          {canSignIn && !user ? (
+          {!user ? (
             <View style={styles.signIn}>
-              <Text variant="bodySm">Bought from us before? Sign in with Google to fill this in. Optional.</Text>
-              <Button
-                variant="link"
-                size="sm"
-                onPress={() => {
-                  setSignInError(null);
-                  void signIn().catch((error: unknown) => {
-                    const { message, detail } = signInFailure(error);
-                    setSignInError(detail ? `${message} Development build only: ${detail}` : message);
-                  });
-                }}
-              >
-                Sign in with Google
+              <Text variant="bodySm">Bought from us before? Sign in to fill this in. Optional.</Text>
+              <Button variant="link" size="sm" onPress={() => router.navigate("/account")}>
+                Go to sign in
               </Button>
-              {signInError ? (
-                <Text variant="bodySm" weight="semibold" tone="warn" accessibilityRole="alert">
-                  {signInError}
-                </Text>
-              ) : null}
             </View>
           ) : null}
           <Field

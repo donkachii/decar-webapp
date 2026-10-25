@@ -2,11 +2,11 @@
 //
 //   DCR-{MAKE}-{MODEL}-{GEN}{F|P}-{TYPE}-{POS}-{COND}[-U##]
 //
-// The locked code tables and buildSku live in backend/app/domain/sku.py. The
+// The locked code tables and buildSku live in backend/src/domain/sku.ts. The
 // frontend only needs to recognise a SKU in a URL or cart line.
 
 export const SKU_PATTERN =
-  /^DCR-(TOY|LEX)-([A-Z0-9]+)-([A-Z0-9]+)([FP])-([A-Z]{2})-([A-Z]{1,2})-(BA|BB|BC|NG|NA)(?:-U(\d{2}))?$/;
+  /^DCR-(TOY|LEX|HON|ACU|NIS|INF|MAZ|MIT|SUB|SUZ|ISU|DAI)-([A-Z0-9]+)-([A-Z0-9]+)([FP])-([A-Z]{2})-([A-Z]{1,2})-(BA|BB|BC|NG|NA)(?:-U(\d{2}))?$/;
 
 export function isValidSku(sku: string): boolean {
   return SKU_PATTERN.test(sku);

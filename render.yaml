@@ -4,15 +4,19 @@
 # Optional features are switched on later under Environment, same names as
 # backend/.env.example: GMAIL_USER, GMAIL_APP_PASSWORD, OWNER_EMAIL,
 # WHATSAPP_NUMBER, PAYSTACK_SECRET_KEY, CLOUDINARY_URL.
+#
+# Moving from the Python service: baseline the live database first (backend/README.md,
+# "Moving from Alembic"), or the first start stops at `prisma migrate deploy`.
 services:
   - type: web
     name: decar-revolutionist-api
-    runtime: python
+    runtime: node
     plan: free
     region: ohio # next to the database (us-east-2)
     rootDir: backend
-    buildCommand: pip install uv && uv sync --frozen --no-dev
-    startCommand: uv run --frozen --no-dev alembic upgrade head && uv run --frozen --no-dev uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    # Node from backend/.node-version; pnpm from package.json's packageManager.
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm exec prisma migrate deploy && node dist/server.js
     healthCheckPath: /health
     envVars:
       - key: APP_ENV
@@ -21,11 +25,12 @@ services:
         value: https://decar-revolutionist.vercel.app
       - key: SESSION_SECRET
         generateValue: true
-      # Render keeps only the checkout between build and run, so if uv has to
-      # download Python 3.13 it must land inside it.
-      - key: UV_PYTHON_INSTALL_DIR
-        value: /opt/render/project/src/.uv-python
       - key: DATABASE_URL
+        sync: false
+      # The database's direct (non-pooled) URI, for prisma migrate deploy. Needed
+      # when DATABASE_URL is a transaction-mode pooler (Neon's -pooler host,
+      # Supabase's port 6543); leave it unset otherwise.
+      - key: DIRECT_URL
         sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false

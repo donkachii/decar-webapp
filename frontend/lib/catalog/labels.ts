@@ -1,4 +1,15 @@
-import { isBelgium, type Category, type Condition, type Part, type PartType, type Position, type ShippingClass, type Vehicle } from "./types";
+import {
+  isBelgium,
+  MAKES,
+  type Category,
+  type Condition,
+  type Make,
+  type Part,
+  type PartType,
+  type Position,
+  type ShippingClass,
+  type Vehicle,
+} from "./types";
 
 export const CONDITION_INFO: Record<
   Condition,
@@ -22,7 +33,7 @@ export const CONDITION_INFO: Record<
   "new-genuine": {
     label: "New · Genuine",
     grade: "N",
-    meaning: "New Toyota or Lexus original part.",
+    meaning: "New original part from the carmaker.",
   },
   "new-aftermarket": {
     label: "New · Aftermarket",
@@ -111,8 +122,28 @@ export function variantValue(value: string | boolean): string {
   return value;
 }
 
+export const MAKE_LABELS: Record<Make, string> = {
+  toyota: "Toyota",
+  lexus: "Lexus",
+  honda: "Honda",
+  acura: "Acura",
+  nissan: "Nissan",
+  infiniti: "Infiniti",
+  mazda: "Mazda",
+  mitsubishi: "Mitsubishi",
+  subaru: "Subaru",
+  suzuki: "Suzuki",
+  isuzu: "Isuzu",
+  daihatsu: "Daihatsu",
+};
+
 export function makeLabel(vehicle: Pick<Vehicle, "make">): string {
-  return vehicle.make === "toyota" ? "Toyota" : "Lexus";
+  return MAKE_LABELS[vehicle.make];
+}
+
+/** The makes with at least one listed car, in MAKES order: what the car pickers offer. */
+export function listedMakes(vehicles: Pick<Vehicle, "make">[]): Make[] {
+  return MAKES.filter((make) => vehicles.some((v) => v.make === make));
 }
 
 // U+2060 word joiners keep "2015–2017" on one line.
