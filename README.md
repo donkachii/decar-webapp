@@ -58,8 +58,8 @@ The shop runs on http://localhost:3000. Without Google keys, `/admin` opens in d
 
 Supabase hosts the database, not Node apps, so the API runs on a Node host such as Render (`render.yaml` at the repo root), Railway or Fly.io. Point the service at the `backend/` folder:
 
-- Build: `corepack enable && pnpm install --frozen-lockfile && pnpm build`
-- Start: `pnpm exec prisma migrate deploy && node dist/server.js`
+- Build: `COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack pnpm install --frozen-lockfile && corepack pnpm build` (not `corepack enable`, which fails on hosts where the preinstalled pnpm is read-only, as on Render)
+- Start: `./node_modules/.bin/prisma migrate deploy && node dist/server.js`
 - Environment: everything in `backend/.env.example`, with `APP_ENV=production`, the Supabase `DATABASE_URL`, `FRONTEND_URL` set to the live shop URL, and a `SESSION_SECRET` from `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`. If `DATABASE_URL` is a transaction-mode pooler (Neon's `-pooler` host, Supabase's port 6543), also set `DIRECT_URL` to the direct URI: migrations can't run through one.
 
 A database the Python backend's Alembic built needs a one-time step before the first Node deploy: [Moving from Alembic](backend/README.md#moving-from-alembic-once-per-database). Keep the same `SESSION_SECRET`, so buyers stay signed in.
