@@ -24,6 +24,14 @@
 
   --font-display: var(--font-naira), var(--font-barlow-condensed), "Arial Narrow", sans-serif;
 
+  /* Elevation is navy at low strength, never a new colour. */
+  --shadow-card:
+    0 0 0 1px color-mix(in srgb, var(--color-navy) 7%, transparent),
+    0 1px 2px color-mix(in srgb, var(--color-navy) 6%, transparent);
+  --shadow-lift:
+    0 0 0 1px color-mix(in srgb, var(--color-navy) 16%, transparent),
+    0 14px 32px -16px color-mix(in srgb, var(--color-navy) 40%, transparent);
+
   --animate-settle: settle 180ms ease-out;
   @keyframes settle {
     from {
@@ -84,7 +92,7 @@
   --border: var(--color-primer);
   --input: var(--color-primer);
   --ring: var(--color-navy);
-  --radius: 0.375rem;
+  --radius: 0.5rem;
 }
 
 @layer base {
@@ -117,6 +125,9 @@
   .on-dark :focus-visible {
     outline-color: var(--color-paper);
   }
+  .on-dark .on-light :focus-visible {
+    outline-color: var(--color-navy);
+  }
 
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -128,6 +139,165 @@
   }
 }
 
+/*
+  Home hero (components/home/hero.tsx). On large screens the video sits in a
+  window on the right half of the stage; scrolling opens it to the full stage.
+  GSAP only moves --open from 0 to 1, and every inset follows from it.
+*/
+.hero-stage {
+  --gutter: max(1rem, calc((100% - 72rem) / 2 + 1rem));
+  --win-t: 9%;
+  --win-r: var(--gutter);
+  --win-b: 9%;
+  --win-l: calc(50% + 0.75rem);
+  /* --open and --lift are set on the hero section by HeroMotion; closed and in place without them. */
+  --shut: calc(1 - var(--open, 0));
+}
+.hero-window {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 0.875rem;
+}
+@media (min-width: 64rem) {
+  .hero-window {
+    position: absolute;
+    inset: 0;
+    aspect-ratio: auto;
+    border-radius: 0;
+    clip-path: inset(
+      calc(var(--win-t) * var(--shut)) calc(var(--win-r) * var(--shut)) calc(var(--win-b) * var(--shut))
+        calc(var(--win-l) * var(--shut)) round calc(1.125rem * var(--shut))
+    );
+  }
+  /* The headline lifts away and fades as the window opens. */
+  .hero-copy {
+    opacity: calc(1 - var(--lift, 0));
+    translate: 0 calc(var(--lift, 0) * -22%);
+  }
+  [data-lifted] .hero-copy {
+    visibility: hidden;
+  }
+  /* The pause button sits in the window's visible corner. */
+  .hero-edge-r {
+    right: calc(var(--win-r) * var(--shut));
+  }
+  .hero-edge-b {
+    bottom: calc(var(--win-b) * var(--shut));
+  }
+}
+
+/* Headline letters light up one after another, primer to paper, with the
+   video's glow passing through. Painted from the first frame, so LCP is not held back. */
+.lit {
+  animation: lit 900ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(150ms + var(--i) * 17ms);
+}
+@keyframes lit {
+  from {
+    color: var(--color-primer);
+    text-shadow: none;
+  }
+  35% {
+    color: var(--color-paper);
+    text-shadow: 0 0 0.35em color-mix(in srgb, var(--color-tan) 75%, transparent);
+  }
+  to {
+    color: var(--color-paper);
+    text-shadow: 0 0 0 transparent;
+  }
+}
+.rise {
+  animation: rise 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lit,
+  .rise {
+    animation: none;
+  }
+}
+
+/* Navigation progress (components/nav-progress.tsx). */
+@keyframes nav-crawl {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(0.85);
+  }
+}
+
+/*
+  Page transitions (React <ViewTransition>). The header stays put, a part's
+  card photo travels to its product page, and pages crossfade.
+*/
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+::view-transition-old(.page) {
+  animation: 160ms ease-in both vt-fade reverse;
+}
+::view-transition-new(.page) {
+  animation: 260ms ease-out 100ms both vt-fade;
+}
+::view-transition-group(.page) {
+  animation-duration: 0s;
+}
+::view-transition-group(.part-photo) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.3, 0.7, 0.1, 1);
+}
+::view-transition-image-pair(.part-photo) {
+  isolation: isolate;
+}
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
 @utility tabular {
   font-variant-numeric: tabular-nums;
+}
+
+/* The damage selector's floor: navy with a faint primer grid, like a marked
+   inspection bay seen from above. */
+@utility bay-floor {
+  background-color: var(--color-navy);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-primer) 13%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-primer) 13%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+  background-position: -1px -1px;
 }

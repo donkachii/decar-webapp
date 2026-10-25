@@ -1,7 +1,14 @@
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
 import { api, apiOrNull } from "./api";
-import { pickReplacedTogether, type Fitment, type Part, type PartFilters, type Vehicle } from "./domain";
+import {
+  pickReplacedTogether,
+  type CategoryPhotos,
+  type Fitment,
+  type Part,
+  type PartFilters,
+  type Vehicle,
+} from "./domain";
 
 // Catalog reads, the same calls as the website's api-source.ts. Parts are
 // never cached as fresh (rule 5: stock truth beats everything); screens
@@ -65,6 +72,11 @@ export async function fetchFitment({
   return rows.map((r) => ({ partSku: r.partSku, vehicleId: r.vehicleId, notes: r.notes ?? undefined }));
 }
 
+/** The owner's photo for each category tile, set in the website's /admin. */
+export function fetchCategoryPhotos(): Promise<CategoryPhotos> {
+  return api<CategoryPhotos>("/categories/photos");
+}
+
 // --- Queries -----------------------------------------------------------------
 
 // The shop adds a car only when stock for it is listed, so vehicles can stay
@@ -77,6 +89,11 @@ export const vehiclesQuery = queryOptions({
 
 export function useVehicles() {
   return useQuery(vehiclesQuery);
+}
+
+// Tile photos change rarely and aren't stock, so they can stay fresh a while too.
+export function useCategoryPhotos() {
+  return useQuery({ queryKey: ["category-photos"], queryFn: fetchCategoryPhotos, staleTime: 10 * 60_000 });
 }
 
 export function useParts(filters: PartFilters, options: { enabled?: boolean } = {}) {

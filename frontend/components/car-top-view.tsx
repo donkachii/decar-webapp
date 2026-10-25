@@ -1,7 +1,8 @@
 /**
  * Line-drawn saloon seen from above, front at the top. Left on the drawing is
  * the car's left (driver's side in Nigeria). viewBox is 300 x 440 so the
- * damage-selector grid can sit on it in percentages.
+ * damage-selector grid can sit on it in percentages. Lines take the text
+ * colour (navy on light grounds, paper on the damage selector's floor).
  */
 export function CarTopView({ className }: { className?: string }) {
   return (
@@ -10,14 +11,14 @@ export function CarTopView({ className }: { className?: string }) {
       aria-hidden
       className={className}
       fill="none"
-      stroke="var(--color-navy)"
+      stroke="currentColor"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
     >
       <g transform="translate(0 20)">
         {/* wheels */}
-        <g fill="var(--color-navy)" stroke="none">
+        <g fill="currentColor" stroke="none">
           <rect x="57" y="74" width="10" height="38" rx="3" />
           <rect x="233" y="74" width="10" height="38" rx="3" />
           <rect x="57" y="290" width="10" height="38" rx="3" />

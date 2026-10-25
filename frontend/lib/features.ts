@@ -10,6 +10,8 @@ export interface Features {
   paystack: boolean;
   /** Local dev without Google sign-in: /admin opens without signing in. */
   demoAdmin: boolean;
+  /** CLOUDINARY_URL is set: /admin can upload part and category photos. */
+  photoUploads: boolean;
 }
 
 export const getFeatures = cache((): Promise<Features> => api<Features>("/features"));

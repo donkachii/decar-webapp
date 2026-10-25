@@ -3,7 +3,20 @@
 // The frontend keeps the same unions in frontend/lib/catalog/types.ts. The API is
 // the authority: anything priced, reserved or validated is decided here.
 
-export const MAKES = ["toyota", "lexus"] as const;
+export const MAKES = [
+  "toyota",
+  "lexus",
+  "honda",
+  "acura",
+  "nissan",
+  "infiniti",
+  "mazda",
+  "mitsubishi",
+  "subaru",
+  "suzuki",
+  "isuzu",
+  "daihatsu",
+] as const;
 export const CATEGORIES = ["lights", "bumpers", "body", "mirrors"] as const;
 export const PART_TYPES = [
   "headlight",

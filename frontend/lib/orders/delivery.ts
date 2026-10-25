@@ -19,7 +19,7 @@ export const DELIVERY_OPTIONS: Record<DeliveryOption, { label: string; detail: s
 
 export const DELIVERY_ORDER: readonly DeliveryOption[] = ["pickup", "abuja", "waybill"];
 
-// Rates live in the API (backend/app/domain/delivery.py, GET /delivery/rates)
+// Rates live in the API (backend/src/domain/delivery.ts, GET /delivery/rates)
 // so the fee shown here is the fee charged. One fee per order, set by the
 // largest item, because one trip carries everything.
 export type DeliveryRates = Record<DeliveryOption, Record<ShippingClass, number>>;

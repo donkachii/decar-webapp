@@ -61,7 +61,7 @@ export function CartDrawer({ vehicleId }: { vehicleId: string | null }) {
           ) : (
             <>
               {!vehicle && !loading ? (
-                <div className="mt-4 flex items-center justify-between gap-3 rounded-md border border-dashed border-navy px-3 py-2.5">
+                <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-dashed border-navy/50 bg-bay/60 px-3 py-2.5">
                   <p className="text-sm">Choose your car and we&apos;ll check every part fits.</p>
                   <Button
                     size="sm"
@@ -153,14 +153,14 @@ function CartButtonView({ count, onClick }: { count: number; onClick: () => void
     <button
       type="button"
       onClick={onClick}
-      className="relative grid size-11 place-items-center rounded-md hover:bg-paper"
+      className="relative grid size-11 place-items-center rounded-lg transition-colors hover:bg-paper/10"
       aria-label={shown > 0 ? `Cart, ${shown} ${shown === 1 ? "part" : "parts"}` : "Cart, empty"}
     >
       <ShoppingCart aria-hidden className="size-[22px]" />
       {shown > 0 ? (
         <span
           aria-hidden
-          className="absolute top-1 right-0.5 grid min-w-5 place-items-center rounded-full bg-tan px-1 text-xs leading-5 font-bold tabular"
+          className="absolute top-1 right-0.5 grid min-w-5 place-items-center rounded-full bg-tan px-1 text-xs leading-5 font-bold text-navy tabular ring-2 ring-navy"
         >
           {shown}
         </span>

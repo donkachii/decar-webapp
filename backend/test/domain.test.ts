@@ -6,11 +6,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
 
+import { MAKES } from "../src/domain/catalog.js";
 import { cleanLines, normalisePhone, validateCheckout } from "../src/domain/checkout.js";
 import { deliveryFee } from "../src/domain/delivery.js";
 import { formatNgn, partTitle } from "../src/domain/labels.js";
 import { adminPhotoName, isAdminPhoto, keptPhotos, MAX_PART_PHOTOS, withPhoto } from "../src/domain/photos.js";
-import { buildSku, isValidSku, normaliseSku } from "../src/domain/sku.js";
+import { buildSku, isValidSku, MAKE_CODES, normaliseSku } from "../src/domain/sku.js";
 import { planPhotos } from "../src/photos.js";
 import { CheckoutIn } from "../src/schemas.js";
 import { parseCloudinaryUrl, sign } from "../src/services/cloudinary.js";
@@ -33,6 +34,10 @@ test("SKUs follow the locked convention", () => {
   assert.equal(normaliseSku(" dcr-toy-cam-xv50f-hl-fr-ba-u01 "), "DCR-TOY-CAM-XV50F-HL-FR-BA-U01");
   assert.equal(normaliseSku("DCR-TOY-CAM-XV50F-HL-FR-BA%2DU01"), "DCR-TOY-CAM-XV50F-HL-FR-BA-U01");
   assert.equal(normaliseSku("100%"), null);
+});
+
+test("every make's SKU code passes the SKU pattern", () => {
+  for (const make of MAKES) assert.equal(isValidSku(`DCR-${MAKE_CODES[make]}-X-Y1P-HL-FL-NA`), true, make);
 });
 
 test("Nigerian phone numbers normalise like the Python backend did", () => {

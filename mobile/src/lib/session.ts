@@ -253,7 +253,7 @@ const PASSWORD_PATH: Record<PasswordMode, string> = {
 /**
  * Email and password: signs in, or makes the account and signs it in. The
  * API's refusals (wrong password, email taken, password too short) are already
- * in the form's words (backend app/domain/accounts.py), so they show as they are.
+ * in the form's words (backend src/domain/accounts.ts), so they show as they are.
  */
 export function usePasswordSignIn() {
   const client = useQueryClient();

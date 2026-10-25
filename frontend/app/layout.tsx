@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed } from "next/font/google";
 import localFont from "next/font/local";
+import { Suspense, ViewTransition } from "react";
 
 import { CartDrawer } from "@/components/cart-drawer";
 import { CartSync } from "@/components/cart-sync";
+import { NavProgress } from "@/components/nav-progress";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { VehiclePickerSheet } from "@/components/vehicle-picker";
@@ -44,7 +46,7 @@ const naira = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: "De Car Revolutionist: Toyota and Lexus body parts, Zuba Market",
+    default: "De Car Revolutionist: Japanese car body parts, Zuba Market",
     template: "%s | De Car Revolutionist",
   },
   description:
@@ -53,7 +55,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ECEEF0",
+  // The wine shop strip tops every page.
+  themeColor: "#4E1526",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
@@ -68,9 +71,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         >
           Skip to content
         </a>
+        <Suspense fallback={null}>
+          <NavProgress />
+        </Suspense>
         <SiteHeader vehicle={vehicle} user={user} />
         <main id="main" className="flex-1">
-          {children}
+          {/* Pages crossfade on navigation; named part photos travel between pages (globals.css). */}
+          <ViewTransition update="page" default="none">
+            {children}
+          </ViewTransition>
         </main>
         <SiteFooter />
         <VehiclePickerSheet vehicles={vehicles} selectedId={vehicle?.id ?? null} />

@@ -13,6 +13,16 @@ import type { Condition, Make, PartType, Position } from "./catalog.js";
 export const MAKE_CODES: Record<Make, string> = {
   toyota: "TOY",
   lexus: "LEX",
+  honda: "HON",
+  acura: "ACU",
+  nissan: "NIS",
+  infiniti: "INF",
+  mazda: "MAZ",
+  mitsubishi: "MIT",
+  subaru: "SUB",
+  suzuki: "SUZ",
+  isuzu: "ISU",
+  daihatsu: "DAI",
 };
 
 export const MODEL_CODES: Readonly<Record<string, string>> = {
@@ -64,9 +74,9 @@ export const CONDITION_CODES: Record<Condition, string> = {
   "new-aftermarket": "NA",
 };
 
-// Same expression as the parts_sku_format check constraint in prisma/migrations/0_init.
+// Same expression as the parts_sku_format check constraint (prisma/migrations/3_japanese_makes).
 export const SKU_PATTERN =
-  /^DCR-(TOY|LEX)-[A-Z0-9]+-[A-Z0-9]+[FP]-[A-Z]{2}-[A-Z]{1,2}-(BA|BB|BC|NG|NA)(-U[0-9]{2})?$/;
+  /^DCR-(TOY|LEX|HON|ACU|NIS|INF|MAZ|MIT|SUB|SUZ|ISU|DAI)-[A-Z0-9]+-[A-Z0-9]+[FP]-[A-Z]{2}-[A-Z]{1,2}-(BA|BB|BC|NG|NA)(-U[0-9]{2})?$/;
 export const UNIT_SUFFIX = /-U([0-9]{2})$/;
 
 export interface SkuParts {

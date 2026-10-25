@@ -14,7 +14,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { vehicleGenerationLabel, yearRange } from "@/lib/catalog/labels";
+import { listedMakes, MAKE_LABELS, vehicleGenerationLabel, yearRange } from "@/lib/catalog/labels";
 import type { Make, Vehicle } from "@/lib/catalog/types";
 
 const usePicker = create<{ open: boolean; setOpen: (open: boolean) => void }>((set) => ({
@@ -38,7 +38,8 @@ export function VehiclePickerSheet({
   const open = usePicker((s) => s.open);
   const setOpen = usePicker((s) => s.setOpen);
   const selected = vehicles.find((v) => v.id === selectedId) ?? null;
-  const [make, setMake] = useState<Make>(selected?.make ?? "toyota");
+  const makes = listedMakes(vehicles);
+  const [make, setMake] = useState<Make>(selected?.make ?? makes[0] ?? "toyota");
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -72,19 +73,23 @@ export function VehiclePickerSheet({
         </SheetHeader>
 
         <div className="px-4 pt-4">
-          <div role="group" aria-label="Make" className="grid grid-cols-2 gap-1 rounded-md bg-bay p-1">
-            {(["toyota", "lexus"] as const).map((m) => (
+          <div
+            role="group"
+            aria-label="Make"
+            className="grid grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))] gap-1 rounded-lg bg-bay p-1"
+          >
+            {makes.map((m) => (
               <button
                 key={m}
                 type="button"
                 aria-pressed={make === m}
                 onClick={() => setMake(m)}
                 className={cn(
-                  "h-10 rounded-[4px] font-display text-lg font-semibold transition-colors",
-                  make === m ? "bg-paper shadow-[0_1px_0_var(--color-primer)]" : "hover:bg-paper/60",
+                  "h-10 rounded-md font-display text-lg font-semibold transition-colors",
+                  make === m ? "bg-paper shadow-card" : "hover:bg-paper/60",
                 )}
               >
-                {m === "toyota" ? "Toyota" : "Lexus"}
+                {MAKE_LABELS[m]}
               </button>
             ))}
           </div>
@@ -109,10 +114,10 @@ export function VehiclePickerSheet({
                           disabled={isPending}
                           aria-current={isSelected ? "true" : undefined}
                           className={cn(
-                            "flex w-full items-center justify-between gap-3 rounded-md border px-3 py-2.5 text-left transition-colors disabled:opacity-60",
+                            "flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors disabled:opacity-60",
                             isSelected
                               ? "border-tan bg-tan"
-                              : "border-primer bg-paper hover:border-navy",
+                              : "border-navy/15 bg-paper hover:border-navy",
                           )}
                         >
                           <span>
@@ -149,7 +154,7 @@ export function VehiclePickerSheet({
   );
 }
 
-/** Header chip. Tan when a car is selected; a dashed empty slot when not. */
+/** Header chip on navy. Tan when a car is selected; a dashed empty slot when not. */
 export function VehicleChip({ label, className }: { label: string | null; className?: string }) {
   const openPicker = useOpenVehiclePicker();
   return (
@@ -157,10 +162,10 @@ export function VehicleChip({ label, className }: { label: string | null; classN
       type="button"
       onClick={openPicker}
       className={cn(
-        "inline-flex h-11 min-w-0 items-center gap-2 rounded-md px-3 text-left text-[15px] font-semibold transition-colors",
+        "inline-flex h-11 min-w-0 items-center gap-2 rounded-lg px-3 text-left text-[15px] font-semibold transition-[background-color,border-color,box-shadow]",
         label
-          ? "bg-tan text-navy hover:shadow-[inset_0_0_0_2px_var(--color-navy)]"
-          : "border-[1.5px] border-dashed border-navy hover:bg-paper",
+          ? "bg-tan text-navy hover:shadow-[inset_0_0_0_2px_var(--color-paper)]"
+          : "border-[1.5px] border-dashed border-paper/50 text-paper hover:border-paper hover:bg-paper/10",
         className,
       )}
     >

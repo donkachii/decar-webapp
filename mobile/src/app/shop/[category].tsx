@@ -210,8 +210,8 @@ function Listing({ category, params }: { category: Category; params: Params }) {
     <Panel style={styles.emptyPanel}>
       <Text variant="h2">Not listed online yet</Text>
       <Text>
-        The shop stocks {info.blurb.toLowerCase()} for many Toyota and Lexus models. Tell us your car and the part,
-        and we&apos;ll send photos and a price.
+        The shop stocks {info.blurb.toLowerCase()} for many Japanese cars. Tell us your car and the part, and
+        we&apos;ll send photos and a price.
       </Text>
       <WhatsappButton message={askMessage} variant="primary" />
     </Panel>

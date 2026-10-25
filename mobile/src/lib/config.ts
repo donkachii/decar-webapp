@@ -3,7 +3,7 @@
 
 const url = (value: string | undefined, fallback: string) => (value || fallback).replace(/\/$/, "");
 
-/** The FastAPI backend. The app calls it directly; every price and stock check happens there. */
+/** The backend API. The app calls it directly; every price and stock check happens there. */
 export const API_URL = url(process.env.EXPO_PUBLIC_API_URL, "http://localhost:8000");
 
 /** The website. Shared links point here so they preview in WhatsApp; drawings load from it. */

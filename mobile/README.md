@@ -26,7 +26,7 @@ npx expo-doctor           # dependency and config check
 
 ## How it fits with the rest
 
-- **No server in between.** The website's browser never calls the API; the Next.js server does. The app calls the FastAPI backend directly (`src/lib/api.ts`). It holds no secrets: the API decides every price, reservation and validation, exactly as for the website.
+- **No server in between.** The website's browser never calls the API; the Next.js server does. The app calls the backend API directly (`src/lib/api.ts`). It holds no secrets: the API decides every price, reservation and validation, exactly as for the website.
 - **Shared rules, not copies.** `src/lib/domain.ts` re-exports the website's pure modules from `../frontend/lib` (types, labels, zones, side grouping, "replaced together", SKU pattern, NGN and time formatting, delivery fees). `metro.config.js` watches that folder and `tsconfig.json` maps the one `@/lib/catalog/types` import inside it. Keep those frontend files free of Next.js, server-only and package imports, or the app stops building.
 - **Stock truth.** Part queries are never cached as fresh. Screens re-read them on focus, when the app returns to the foreground and on pull-to-refresh, and every card shows "Stock checked".
 - **Cart** (`src/lib/cart.ts`): a persisted store of `{ sku, qty }` only. Prices, status and fit are re-read from the API whenever the cart shows. While the buyer is signed in, the cart is also saved to their account (`src/lib/cart-sync.ts`, same rules as the website), so it is the same cart on the website and the phone. Signing in adds the phone's guest cart to the account's; signing out empties the phone's cart and leaves the account's as it is.

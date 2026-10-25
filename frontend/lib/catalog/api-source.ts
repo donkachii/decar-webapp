@@ -1,9 +1,9 @@
 import "server-only";
 
-import { api, apiOrNull } from "@/lib/api/client";
+import { api, ApiError, apiOrNull } from "@/lib/api/client";
 
 import type { CatalogSource } from "./source";
-import type { Fitment, Part, PartFilters, Vehicle } from "./types";
+import type { CategoryPhotos, Fitment, Part, PartFilters, Vehicle } from "./types";
 
 // The API sends every key, with null or [] for "none"; the domain types use
 // optional fields instead.
@@ -62,6 +62,19 @@ export const apiSource: CatalogSource = {
     return rows.map(toFitment);
   },
 
+  // An API older than the website (404), or a database without the
+  // category_photos migration yet (500), has no tile photos; the tiles fall
+  // back to part photos rather than taking the home page down.
+  async getCategoryPhotos() {
+    try {
+      return await api<CategoryPhotos>("/categories/photos");
+    } catch (error) {
+      if (!(error instanceof ApiError)) throw error;
+      if (error.status !== 404) console.error("[catalog] category photos unavailable", error);
+      return { lights: null, bumpers: null, body: null, mirrors: null };
+    }
+  },
+
   async setPartStatus(sku, status) {
     await api(`/admin/parts/${encodeURIComponent(sku)}/status`, {
       method: "POST",
@@ -72,5 +85,31 @@ export const apiSource: CatalogSource = {
 
   async touchStockCheck(sku) {
     await api(`/admin/parts/${encodeURIComponent(sku)}/checked`, { method: "POST", session: true });
+  },
+
+  async addPartPhoto(sku, photo) {
+    const res = await api<{ images: string[] }>(`/admin/parts/${encodeURIComponent(sku)}/photos`, {
+      method: "POST",
+      file: photo,
+      session: true,
+    });
+    return res.images;
+  },
+
+  async setPartPhotos(sku, images) {
+    const res = await api<{ images: string[] }>(`/admin/parts/${encodeURIComponent(sku)}/photos`, {
+      method: "PUT",
+      body: { images },
+      session: true,
+    });
+    return res.images;
+  },
+
+  async setCategoryPhoto(category, photo) {
+    await api(`/admin/categories/${category}/photo`, { method: "POST", file: photo, session: true });
+  },
+
+  async clearCategoryPhoto(category) {
+    await api(`/admin/categories/${category}/photo`, { method: "DELETE", session: true });
   },
 };

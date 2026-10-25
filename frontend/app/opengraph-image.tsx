@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 import { SITE } from "@/lib/config/site";
 import { OG, ogFonts, ogLogoTile } from "@/lib/og";
 
-export const alt = "The right part for your Toyota or Lexus. First time.";
+export const alt = "The right part for your Toyota, Lexus, Honda or Nissan. First time.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -28,8 +28,8 @@ export default async function Image() {
           <img src={logo} alt="" width={64} height={64} />
           {SITE.name}
         </div>
-        <div style={{ display: "flex", fontFamily: "Barlow Condensed", fontSize: 112, lineHeight: 0.95, maxWidth: 1000 }}>
-          The right part for your Toyota or Lexus. First time.
+        <div style={{ display: "flex", fontFamily: "Barlow Condensed", fontSize: 96, lineHeight: 0.95, maxWidth: 1000 }}>
+          The right part for your Toyota, Lexus, Honda or Nissan. First time.
         </div>
         <div style={{ display: "flex", fontSize: 30, borderTop: `2px solid ${OG.primer}`, paddingTop: 24 }}>
           Genuine Belgium and new body parts from Zuba Market, Abuja

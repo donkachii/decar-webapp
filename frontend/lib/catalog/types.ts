@@ -1,6 +1,18 @@
 // Domain model. Mirrors CLAUDE.md section 5; change both together.
 
-export type Make = "toyota" | "lexus";
+export type Make =
+  | "toyota"
+  | "lexus"
+  | "honda"
+  | "acura"
+  | "nissan"
+  | "infiniti"
+  | "mazda"
+  | "mitsubishi"
+  | "subaru"
+  | "suzuki"
+  | "isuzu"
+  | "daihatsu";
 
 export interface Vehicle {
   id: string; // 'toyota-camry-xv50-f'
@@ -77,6 +89,9 @@ export interface Fitment {
   notes?: string;
 }
 
+/** The owner's photo for each category tile; null where the tile uses a part's photo. */
+export type CategoryPhotos = Record<Category, string | null>;
+
 export interface PartFilters {
   category?: Category;
   types?: PartType[];
@@ -86,7 +101,20 @@ export interface PartFilters {
   includeSold?: boolean;
 }
 
-export const MAKES: readonly Make[] = ["toyota", "lexus"];
+export const MAKES: readonly Make[] = [
+  "toyota",
+  "lexus",
+  "honda",
+  "acura",
+  "nissan",
+  "infiniti",
+  "mazda",
+  "mitsubishi",
+  "subaru",
+  "suzuki",
+  "isuzu",
+  "daihatsu",
+];
 export const CATEGORIES: readonly Category[] = ["lights", "bumpers", "body", "mirrors"];
 export const CONDITIONS: readonly Condition[] = [
   "belgium-a",

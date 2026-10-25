@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import { useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { DamageSelector, type ZonePart } from "@/components/damage-selector";
@@ -10,7 +11,7 @@ import { Screen, SectionTitle } from "@/components/screen";
 import { ErrorState, Loading } from "@/components/states";
 import { Text } from "@/components/text";
 import { VehicleChip } from "@/components/vehicle-chip";
-import { useParts } from "@/lib/catalog";
+import { useCategoryPhotos, useParts } from "@/lib/catalog";
 import { SITE } from "@/lib/config";
 import {
   CATEGORIES,
@@ -39,7 +40,12 @@ const PROMISES = [
 export default function HomeScreen() {
   const vehicle = useSelectedVehicle();
   const query = useParts({ vehicleId: vehicle?.id });
-  const { refreshing, onRefresh } = usePullToRefresh(query.refetch);
+  const categoryPhotos = useCategoryPhotos();
+  const { refetch: refetchParts } = query;
+  const { refetch: refetchPhotos } = categoryPhotos;
+  const { refreshing, onRefresh } = usePullToRefresh(
+    useCallback(() => Promise.all([refetchParts(), refetchPhotos()]), [refetchParts, refetchPhotos]),
+  );
   useRefreshOnFocus(query.refetch);
 
   const available = (query.data ?? []).filter((p) => p.status === "available");
@@ -74,7 +80,7 @@ export default function HomeScreen() {
         <Text variant="cardTitle">{SITE.name}</Text>
       </View>
       <Text variant="hero" accessibilityRole="header" style={styles.hero}>
-        The right part for your Toyota or Lexus. First time.
+        The right part for your Toyota, Lexus, Honda or Nissan. First time.
       </Text>
       <Text style={styles.sub}>
         Genuine Belgium and new body parts from Zuba Market, checked for fit before they leave the shop.
@@ -117,6 +123,7 @@ export default function HomeScreen() {
             key={category}
             category={category}
             parts={available.filter((p) => p.category === category)}
+            photo={categoryPhotos.data?.[category] ?? null}
             loading={query.isPending}
             model={vehicle?.model ?? null}
           />
@@ -137,7 +144,7 @@ export default function HomeScreen() {
           How we grade every part
         </Text>
         <Text style={styles.panelSub}>
-          Belgium parts are genuine Toyota and Lexus parts from foreign-used cars. Each unit is one of a kind,
+          Belgium parts are genuine parts from foreign-used Japanese cars. Each unit is one of a kind,
           photographed and graded on its own.
         </Text>
         <View style={styles.gradeList}>
@@ -159,17 +166,20 @@ export default function HomeScreen() {
 function CategoryCard({
   category,
   parts,
+  photo,
   loading,
   model,
 }: {
   category: Category;
   parts: Part[];
+  /** The owner's tile photo from /admin; without one, the first in-stock part photo. */
+  photo: string | null;
   loading: boolean;
   model: string | null;
 }) {
   const { cardWidth } = useGridColumns();
   const focus = useFocusRing();
-  const photo = parts.find((p) => !isDrawing(p.images[0]));
+  const partPhoto = parts.find((p) => !isDrawing(p.images[0]));
   const info = CATEGORY_INFO[category];
   return (
     <Pressable
@@ -181,9 +191,9 @@ function CategoryCard({
     >
       <View style={styles.categoryImage}>
         <PartImage
-          src={photo ? photo.images[0] : `/parts/${CATEGORY_TYPES[category][0]}.svg`}
+          src={photo ?? partPhoto?.images[0] ?? `/parts/${CATEGORY_TYPES[category][0]}.svg`}
           alt=""
-          position={photo?.position ?? "n/a"}
+          position={photo ? "n/a" : (partPhoto?.position ?? "n/a")}
           width={cardWidth}
           style={styles.wide}
         />

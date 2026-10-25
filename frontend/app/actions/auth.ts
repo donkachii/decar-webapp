@@ -43,7 +43,7 @@ export interface PasswordState {
 
 /**
  * Email and password: signs in, or makes the account and signs it in. The
- * API's refusals are already in the form's words (backend app/domain/accounts.py).
+ * API's refusals are already in the form's words (backend src/domain/accounts.ts).
  */
 export async function passwordAuth(_prev: PasswordState, formData: FormData): Promise<PasswordState> {
   const next = safeNext(formData.get("next"));

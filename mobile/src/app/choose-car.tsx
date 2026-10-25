@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { Check, ChevronRight } from "lucide-react-native";
 import { useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View, type ViewStyle } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button";
@@ -9,7 +9,7 @@ import { useFocusRing } from "@/components/focus";
 import { ErrorState, Loading } from "@/components/states";
 import { Text } from "@/components/text";
 import { useVehicles } from "@/lib/catalog";
-import { vehicleGenerationLabel, yearRange, type Make, type Vehicle } from "@/lib/domain";
+import { listedMakes, MAKE_LABELS, vehicleGenerationLabel, yearRange, type Make, type Vehicle } from "@/lib/domain";
 import { useSelectedVehicle, useSetVehicle } from "@/lib/vehicle";
 import { color, font, GUTTER, radius } from "@/theme";
 
@@ -18,7 +18,8 @@ export default function ChooseCarScreen() {
   const vehicles = useVehicles();
   const selected = useSelectedVehicle();
   const setVehicle = useSetVehicle();
-  const [make, setMake] = useState<Make>(selected?.make ?? "toyota");
+  const makes = listedMakes(vehicles.data ?? []);
+  const [make, setMake] = useState<Make>(selected?.make ?? makes[0] ?? "toyota");
   const insets = useSafeAreaInsets();
 
   const pick = (id: string | null) => {
@@ -31,6 +32,8 @@ export default function ChooseCarScreen() {
 
   const ofMake = vehicles.data.filter((v) => v.make === make);
   const models = [...new Set(ofMake.map((v) => v.model))];
+  // Up to three makes a row; a short last row keeps the same widths.
+  const makeWidth = { maxWidth: `${100 / Math.min(makes.length, 3)}%` as const };
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 24 }]}>
@@ -40,13 +43,13 @@ export default function ChooseCarScreen() {
       </Text>
 
       <View accessibilityRole="tablist" style={styles.makes}>
-        {(["toyota", "lexus"] as const).map((m) => (
-          <MakeButton key={m} label={m === "toyota" ? "Toyota" : "Lexus"} selected={make === m} onPress={() => setMake(m)} />
+        {makes.map((m) => (
+          <MakeButton key={m} label={MAKE_LABELS[m]} selected={make === m} style={makeWidth} onPress={() => setMake(m)} />
         ))}
       </View>
 
       {models.length === 0 ? (
-        <Text style={styles.none}>No {make === "toyota" ? "Toyota" : "Lexus"} cars listed yet.</Text>
+        <Text style={styles.none}>No cars listed yet.</Text>
       ) : null}
 
       {models.map((model) => (
@@ -73,7 +76,17 @@ export default function ChooseCarScreen() {
   );
 }
 
-function MakeButton({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
+function MakeButton({
+  label,
+  selected,
+  style,
+  onPress,
+}: {
+  label: string;
+  selected: boolean;
+  style: ViewStyle;
+  onPress: () => void;
+}) {
   const focus = useFocusRing();
   return (
     <Pressable
@@ -82,7 +95,7 @@ function MakeButton({ label, selected, onPress }: { label: string; selected: boo
       onPress={onPress}
       onFocus={focus.onFocus}
       onBlur={focus.onBlur}
-      style={[styles.make, selected && styles.makeOn, focus.ring]}
+      style={[styles.make, style, selected && styles.makeOn, focus.ring]}
     >
       <Text variant="h3">{label}</Text>
     </Pressable>
@@ -118,12 +131,13 @@ const styles = StyleSheet.create({
   makes: {
     marginTop: 16,
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 4,
     padding: 4,
     borderRadius: radius.md,
     backgroundColor: color.bay,
   },
-  make: { flex: 1, minHeight: 44, alignItems: "center", justifyContent: "center", borderRadius: radius.sm },
+  make: { flexGrow: 1, flexBasis: "30%", minHeight: 44, alignItems: "center", justifyContent: "center", borderRadius: radius.sm },
   makeOn: { backgroundColor: color.paper, borderBottomWidth: 1, borderBottomColor: color.primer },
   none: { marginTop: 20 },
   model: { marginTop: 24, gap: 8 },

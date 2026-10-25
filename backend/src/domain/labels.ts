@@ -21,7 +21,20 @@ export const POSITION_LABELS: Record<Position, string> = {
   "n/a": "Not applicable",
 };
 
-export const MAKE_LABELS: Record<Make, string> = { toyota: "Toyota", lexus: "Lexus" };
+export const MAKE_LABELS: Record<Make, string> = {
+  toyota: "Toyota",
+  lexus: "Lexus",
+  honda: "Honda",
+  acura: "Acura",
+  nissan: "Nissan",
+  infiniti: "Infiniti",
+  mazda: "Mazda",
+  mitsubishi: "Mitsubishi",
+  subaru: "Subaru",
+  suzuki: "Suzuki",
+  isuzu: "Isuzu",
+  daihatsu: "Daihatsu",
+};
 
 /** 'Camry 2015–2017 headlight, front-right'. Front, rear and n/a are implied by the name. */
 export function partTitle(name: string, position: Position): string {
